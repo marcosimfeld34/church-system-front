@@ -181,11 +181,13 @@ const Home = () => {
         isFitted
         width={"100%"}
         variant="line"
-        padding={2}
+        py={2}
         display={{ md: "none" }}
       >
         <TabList border={"none"}>
           <Tab
+            boxSize={"14"}
+            mx={1}
             _selected={{ bgColor: "purple.600", borderRadius: "10px" }}
             outlineColor={"none"}
             fontSize={"smaller"}
@@ -193,51 +195,59 @@ const Home = () => {
             onClick={() => goToSales()}
           >
             <Flex direction={"column"} alignItems={"center"}>
-              <FaHouse size={25} />
+              <FaHouse size={20} />
               <Text>Inicio</Text>
             </Flex>
           </Tab>
           <Tab
+            boxSize={"14"}
+            mx={1}
             _selected={{ bgColor: "purple.600", borderRadius: "10px" }}
             fontSize={"smaller"}
             color={"white"}
             onClick={() => goToDebts()}
           >
             <Flex direction={"column"} alignItems={"center"}>
-              <FaMoneyCheckDollar size={25} />
+              <FaMoneyCheckDollar size={20} />
               <Text>Deudas</Text>
             </Flex>
           </Tab>
           <Tab
+            mx={1}
+            boxSize={"14"}
             _selected={{ bgColor: "purple.600", borderRadius: "10px" }}
             fontSize={"smaller"}
             color={"white"}
             onClick={() => goToProducts()}
           >
             <Flex direction={"column"} alignItems={"center"}>
-              <FaBoxesStacked size={25} />
+              <FaBoxesStacked size={20} />
               <Text>Productos</Text>
             </Flex>
           </Tab>
           <Tab
+            mx={1}
+            boxSize={"14"}
             _selected={{ bgColor: "purple.600", borderRadius: "10px" }}
             fontSize={"smaller"}
             color={"white"}
             onClick={() => goToClients()}
           >
             <Flex direction={"column"} alignItems={"center"}>
-              <FaUsers size={25} />
+              <FaUsers size={20} />
               <Text>Clientes</Text>
             </Flex>
           </Tab>
           <Tab
+            mx={1}
+            boxSize={"14"}
             _selected={{ bgColor: "purple.600", borderRadius: "10px" }}
             fontSize={"smaller"}
             color={"white"}
             onClick={() => goToCategories()}
           >
             <Flex direction={"column"} alignItems={"center"}>
-              <FaTags size={25} />
+              <FaTags size={20} />
               <Text>Categorias</Text>
             </Flex>
           </Tab>
