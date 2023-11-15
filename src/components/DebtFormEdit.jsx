@@ -32,6 +32,7 @@ const DebtFormEdit = (props) => {
     useFormik({
       initialValues: {
         client: debtToUpdate?.client?._id || "",
+        isLoading: false,
         sale: debtToUpdate?.sale?._id || "",
         initialAmount: debtToUpdate?.initialAmount || "",
         deliveredAmount:
@@ -39,7 +40,10 @@ const DebtFormEdit = (props) => {
       },
       validationSchema: DebtSchema,
       enableReinitialize: true,
-      onSubmit,
+      onSubmit: (values) => {
+        setFieldValue("isLoading", true);
+        onSubmit(values);
+      },
     });
 
   const handleSelectClients = ({ value }) => {
@@ -60,8 +64,8 @@ const DebtFormEdit = (props) => {
 
   return (
     <>
-      <Grid templateColumns="repeat(6, 1fr)" mt={5}>
-        <GridItem colSpan={4} colStart={2}>
+      <Grid templateColumns={{ base: "repeat(12, 1fr)" }} mt={5}>
+        <GridItem colSpan={{ base: 10, md: 8 }} colStart={{ base: 2, md: 3 }}>
           <Card mb={3} variant="outline">
             <CardBody>
               <Heading mb={3} textAlign="center" size="lg">
@@ -159,7 +163,12 @@ const DebtFormEdit = (props) => {
                   spacing={3}
                   align="stretch"
                 >
-                  <Button type="submit" colorScheme="purple" variant="solid">
+                  <Button
+                    isLoading={values.isLoading}
+                    type="submit"
+                    colorScheme="purple"
+                    variant="solid"
+                  >
                     Actualizar
                   </Button>
                   <Button

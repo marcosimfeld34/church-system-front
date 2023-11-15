@@ -19,6 +19,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
+// import { useNavigate } from "react-router-dom";
 
 import { DeleteIcon } from "@chakra-ui/icons";
 
@@ -31,6 +32,7 @@ import { useFormik } from "formik";
 const SaleFormAdd = (props) => {
   const { onSubmit, onCancelOperation, products, clients } = props;
   const toast = useToast();
+  // const navigate = useNavigate();
 
   const SaleSchema = Yup.object().shape({
     client: Yup.string().required("Requerido"),
@@ -48,11 +50,14 @@ const SaleFormAdd = (props) => {
     initialValues: {
       client: "",
       isPaid: true,
+      isLoading: false,
       saleItems: [{ product: "", quantity: "" }],
     },
     validationSchema: SaleSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
+      formik.setFieldValue("isLoading", true);
+
       const productsWithoutStock = [];
 
       formik.values.saleItems?.forEach((saleItem, index) => {
@@ -345,7 +350,12 @@ const SaleFormAdd = (props) => {
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" colorScheme="purple" variant="solid">
+                  <Button
+                    isLoading={formik.values.isLoading}
+                    type="submit"
+                    colorScheme="purple"
+                    variant="solid"
+                  >
                     Guardar
                   </Button>
                 </HStack>

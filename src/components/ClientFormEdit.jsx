@@ -22,21 +22,26 @@ const ClientFormEdit = (props) => {
 
   const ClientSchema = Yup.object().shape({
     name: Yup.string().required("Requerido"),
+    isLoading: false,
   });
 
-  const { handleSubmit, values, handleChange, errors, touched } = useFormik({
-    initialValues: {
-      name: clientToUpdate?.name || "",
-    },
-    validationSchema: ClientSchema,
-    enableReinitialize: true,
-    onSubmit,
-  });
+  const { handleSubmit, values, handleChange, errors, touched, setFieldValue } =
+    useFormik({
+      initialValues: {
+        name: clientToUpdate?.name || "",
+      },
+      validationSchema: ClientSchema,
+      enableReinitialize: true,
+      onSubmit: (values) => {
+        setFieldValue("isLoading", true);
+        onSubmit(values);
+      },
+    });
 
   return (
     <>
-      <Grid templateColumns="repeat(6, 1fr)" mt={5}>
-        <GridItem colSpan={4} colStart={2}>
+      <Grid templateColumns={{ base: "repeat(12, 1fr)" }} mt={5}>
+        <GridItem colSpan={{ base: 10, md: 8 }} colStart={{ base: 2, md: 3 }}>
           <Card mb={3} variant="outline">
             <CardBody>
               <Heading mb={3} textAlign="center" size="lg">
@@ -66,7 +71,12 @@ const ClientFormEdit = (props) => {
                   spacing={3}
                   align="stretch"
                 >
-                  <Button type="submit" colorScheme="purple" variant="solid">
+                  <Button
+                    isLoading={values.isLoading}
+                    type="submit"
+                    colorScheme="purple"
+                    variant="solid"
+                  >
                     Actualizar
                   </Button>
                   <Button

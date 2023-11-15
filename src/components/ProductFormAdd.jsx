@@ -43,10 +43,14 @@ const ProductFormAdd = (props) => {
         salePrice: "",
         category: "",
         stock: "",
+        isLoading: false,
       },
       validationSchema: ProductSchema,
       enableReinitialize: true,
-      onSubmit,
+      onSubmit: (values) => {
+        setFieldValue("isLoading", true);
+        onSubmit(values);
+      },
     });
 
   const handleSelectCategories = ({ value }) => {
@@ -187,7 +191,12 @@ const ProductFormAdd = (props) => {
                   spacing={3}
                   align="stretch"
                 >
-                  <Button type="submit" colorScheme="purple" variant="solid">
+                  <Button
+                    isLoading={values.isLoading}
+                    type="submit"
+                    colorScheme="purple"
+                    variant="solid"
+                  >
                     Guardar
                   </Button>
                   <Button

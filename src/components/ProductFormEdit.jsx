@@ -42,10 +42,14 @@ const ProductFormEdit = (props) => {
         salePrice: productToUpdate?.salePrice || "",
         category: productToUpdate?.category?._id || "",
         stock: productToUpdate?.stock || "",
+        isLoading: false,
       },
       enableReinitialize: true,
       validationSchema: ProductSchema,
-      onSubmit,
+      onSubmit: (values) => {
+        setFieldValue("isLoading", true);
+        onSubmit(values);
+      },
     });
 
   const handleSelectCategories = ({ value }) => {
@@ -187,7 +191,12 @@ const ProductFormEdit = (props) => {
                   spacing={3}
                   align="stretch"
                 >
-                  <Button type="submit" colorScheme="purple" variant="solid">
+                  <Button
+                    isLoading={values.isLoading}
+                    type="submit"
+                    colorScheme="purple"
+                    variant="solid"
+                  >
                     Actualizar
                   </Button>
                   <Button

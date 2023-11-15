@@ -81,11 +81,13 @@ const SaleFormEdit = (props) => {
     initialValues: {
       client: saleToUpdate?.client?._id || "",
       isPaid: saleToUpdate !== undefined ? saleToUpdate?.isPaid : false,
+      isLoading: false,
       saleItems: saleItemInitial,
     },
     validationSchema: SaleSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
+      formik.setFieldValue("isLoading", true);
       const productsWithoutStock = [];
 
       formik.values.saleItems?.forEach((saleItem, index) => {
@@ -455,7 +457,12 @@ const SaleFormEdit = (props) => {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" colorScheme="purple" variant="solid">
+                <Button
+                  isLoading={formik.values.isLoading}
+                  type="submit"
+                  colorScheme="purple"
+                  variant="solid"
+                >
                   Actualizar
                 </Button>
               </HStack>
