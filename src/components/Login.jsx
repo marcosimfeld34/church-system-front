@@ -67,10 +67,13 @@ const Login = () => {
     initialValues: {
       email: "",
       password: "",
-      loginEnabledBtn: false,
+      isLoading: false,
     },
     validationSchema: LoginSchema,
-    onSubmit,
+    onSubmit: (values) => {
+      setFieldValue("isLoading", true);
+      onSubmit(values);
+    },
   });
 
   const onChangeEmail = (e) => {
@@ -172,7 +175,12 @@ const Login = () => {
                     spacing={3}
                     align="stretch"
                   >
-                    <Button type="submit" colorScheme="blue" variant="solid">
+                    <Button
+                      isLoading={values.isLoading}
+                      type="submit"
+                      colorScheme="blue"
+                      variant="solid"
+                    >
                       Iniciar sesión
                     </Button>
 

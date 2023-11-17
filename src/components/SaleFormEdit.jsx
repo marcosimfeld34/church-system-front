@@ -87,7 +87,6 @@ const SaleFormEdit = (props) => {
     validationSchema: SaleSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      formik.setFieldValue("isLoading", true);
       const productsWithoutStock = [];
 
       formik.values.saleItems?.forEach((saleItem, index) => {
@@ -98,6 +97,7 @@ const SaleFormEdit = (props) => {
               saleItem.quantity
           ) {
             productsWithoutStock.push(saleItem);
+
             formik.setFieldError(
               `saleItems[${index}].quantity`,
               `${saleItemInitialByProductId.get(
@@ -129,6 +129,7 @@ const SaleFormEdit = (props) => {
           isClosable: true,
         });
       } else {
+        formik.setFieldValue("isLoading", true);
         onSubmit(values);
       }
     },
