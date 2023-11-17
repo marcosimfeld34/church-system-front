@@ -195,7 +195,7 @@ const Debt = ({ debt }) => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal size={{ base: "xs", md: "lg" }} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Borrar deuda</ModalHeader>

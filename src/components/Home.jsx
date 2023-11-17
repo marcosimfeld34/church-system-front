@@ -177,7 +177,7 @@ const Home = () => {
         bgColor={"purple.500"}
         color={"white"}
         bottom={0}
-        zIndex={100}
+        zIndex={5}
         isFitted
         width={"100%"}
         variant="line"

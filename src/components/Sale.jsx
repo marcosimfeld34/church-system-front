@@ -33,9 +33,12 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
 
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useState } from "react";
 
 const Sale = ({ sale, saleDetails, debt }) => {
   const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const { handleDeleteSale } = useSaleContext();
 
@@ -48,6 +51,7 @@ const Sale = ({ sale, saleDetails, debt }) => {
   };
 
   const handleDelete = () => {
+    setIsLoading(true);
     handleDeleteSale(sale, saleDetails, debt);
     navigate("/");
   };
@@ -61,11 +65,7 @@ const Sale = ({ sale, saleDetails, debt }) => {
           <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
             <GridItem colSpan={5}>
               <Flex direction="column" gap={2}>
-                <Flex
-                  // bg={"blue"}
-                  alignItems={"center"}
-                  // justifyContent={"space-around"}
-                >
+                <Flex alignItems={"center"}>
                   <Text fontSize="lg" align="start" mr={2}>
                     {sale?.client?.name}
                   </Text>
@@ -175,7 +175,7 @@ const Sale = ({ sale, saleDetails, debt }) => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal size={{ base: "xs", md: "lg" }} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Borrar venta</ModalHeader>
@@ -189,7 +189,12 @@ const Sale = ({ sale, saleDetails, debt }) => {
             </Text>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={() => handleDelete()}>
+            <Button
+              isLoading={isLoading}
+              colorScheme="red"
+              mr={3}
+              onClick={() => handleDelete()}
+            >
               Borrar
             </Button>
             <Button onClick={onClose} variant="ghost">
