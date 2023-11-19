@@ -30,12 +30,14 @@ import { useProductContext } from "../hooks/useProductContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { useState } from "react";
 
 const Product = ({ product }) => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const { handleDeleteProduct } = useProductContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEdit = () => {
     navigate(`${product._id}/edit`);
@@ -46,8 +48,8 @@ const Product = ({ product }) => {
   };
 
   const handleDelete = () => {
+    setIsLoading(true);
     handleDeleteProduct(product);
-
     navigate("/products");
   };
 
@@ -174,7 +176,12 @@ const Product = ({ product }) => {
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={() => handleDelete()}>
+            <Button
+              isLoading={isLoading}
+              colorScheme="red"
+              mr={3}
+              onClick={() => handleDelete()}
+            >
               Borrar
             </Button>
             <Button onClick={onClose} variant="ghost">

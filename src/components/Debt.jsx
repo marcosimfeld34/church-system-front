@@ -33,6 +33,7 @@ import { useDebtContext } from "../hooks/useDebtContext";
 import { useSaleDetailContext } from "../hooks/useSaleDetailContext";
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { useState } from "react";
 
 const Debt = ({ debt }) => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const Debt = ({ debt }) => {
   const { handlePaid } = useDebtContext();
 
   const { handleDeleteSale } = useSaleContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { getSaleDetails } = useSaleDetailContext();
 
@@ -61,6 +63,7 @@ const Debt = ({ debt }) => {
   };
 
   const handleDelete = () => {
+    setIsLoading(true);
     handleDeleteSale(debt?.sale, saleDetailsToDelete, debt);
     navigate("/debts");
   };
@@ -207,7 +210,12 @@ const Debt = ({ debt }) => {
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={() => handleDelete()}>
+            <Button
+              isLoading={isLoading}
+              colorScheme="red"
+              mr={3}
+              onClick={() => handleDelete()}
+            >
               Borrar
             </Button>
             <Button onClick={onClose} variant="ghost">

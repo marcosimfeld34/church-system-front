@@ -30,18 +30,21 @@ import { useClientContext } from "../hooks/useClientContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { useState } from "react";
 
 const Client = ({ client }) => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const { handleDeleteClient } = useClientContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEdit = () => {
     navigate(`${client._id}/edit`);
   };
 
   const handleDelete = () => {
+    setIsLoading(true);
     handleDeleteClient(client);
     navigate("/clients");
   };
@@ -135,7 +138,12 @@ const Client = ({ client }) => {
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={() => handleDelete()}>
+            <Button
+              isLoading={isLoading}
+              colorScheme="red"
+              mr={3}
+              onClick={() => handleDelete()}
+            >
               Borrar
             </Button>
             <Button onClick={onClose} variant="ghost">

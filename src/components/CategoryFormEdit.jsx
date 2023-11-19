@@ -77,7 +77,7 @@ const CategoryFormEdit = (props) => {
                     colorScheme="purple"
                     variant="solid"
                   >
-                    Guardar
+                    Actualizar
                   </Button>
                   <Button
                     onClick={() => onCancelOperation()}

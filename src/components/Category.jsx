@@ -30,18 +30,21 @@ import { useCategoryContext } from "../hooks/useCategoryContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { useState } from "react";
 
 const Category = ({ category }) => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const { handleDeleteCategory } = useCategoryContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEdit = () => {
     navigate(`${category._id}/edit`);
   };
 
   const handleDelete = () => {
+    setIsLoading(true);
     handleDeleteCategory(category);
     navigate("/categories");
   };
@@ -135,7 +138,12 @@ const Category = ({ category }) => {
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={() => handleDelete()}>
+            <Button
+              isLoading={isLoading}
+              colorScheme="red"
+              mr={3}
+              onClick={() => handleDelete()}
+            >
               Borrar
             </Button>
             <Button onClick={onClose} variant="ghost">
