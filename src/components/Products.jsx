@@ -60,7 +60,9 @@ const Products = () => {
   };
 
   const productList = products
-    ?.filter((product) => product.name.toLowerCase().includes(searchValue))
+    ?.filter((product) =>
+      product.name.toLowerCase().includes(searchValue.toLowerCase())
+    )
     ?.map((product) => {
       return <Product key={product._id} product={product} />;
     });
