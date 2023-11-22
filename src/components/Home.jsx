@@ -173,7 +173,7 @@ const Home = () => {
         />
         <Route path="/debts/add" element={<DebtForm />} />
         <Route path="/debts/:debtId/edit" element={<DebtForm />} />
-        {/* <Route
+        <Route
           path="/reports"
           element={
             <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
@@ -191,7 +191,7 @@ const Home = () => {
               </GridItem>
             </Grid>
           }
-        /> */}
+        />
       </Routes>
       <Tabs
         index={tabsIndex.get(pathName)}
