@@ -320,6 +320,11 @@ const NAV_ITEMS = [
     href: "/clients",
     profiles: ["System Administrator", "Seller"],
   },
+  // {
+  //   label: "Gráficos",
+  //   href: "/reports",
+  //   profiles: ["System Administrator", "Seller"],
+  // },
 ];
 
 export default Header;

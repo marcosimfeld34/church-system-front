@@ -10,12 +10,15 @@ import {
   Text,
   Stack,
   Skeleton,
+  FormControl,
   Alert,
+  Input,
   AlertIcon,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 // components
 import Product from "./Product";
@@ -26,6 +29,8 @@ import { useAuthContext } from "../hooks/useAuthContext";
 
 const Products = () => {
   const { getProducts } = useProductContext();
+
+  const [searchValue, setSearchValue] = useState("");
 
   const { user } = useAuthContext();
 
@@ -50,9 +55,15 @@ const Products = () => {
     navigate("add");
   };
 
-  const productList = products?.map((product) => {
-    return <Product key={product._id} product={product} />;
-  });
+  const handleSetSearchValue = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const productList = products
+    ?.filter((product) => product.name.toLowerCase().includes(searchValue))
+    ?.map((product) => {
+      return <Product key={product._id} product={product} />;
+    });
 
   return (
     <>
@@ -127,6 +138,22 @@ const Products = () => {
               <AddIcon boxSize={3} me={2} />
               Agregar producto
             </Button>
+          </Flex>
+        </CardBody>
+      </Card>
+      <Card variant="outline" mt={5} mb={3}>
+        <CardBody>
+          <Flex>
+            <FormControl>
+              <Input
+                name="searchValue"
+                type="text"
+                value={searchValue}
+                onChange={(e) => handleSetSearchValue(e)}
+                placeholder="Buscar producto ..."
+                required
+              />
+            </FormControl>
           </Flex>
         </CardBody>
       </Card>

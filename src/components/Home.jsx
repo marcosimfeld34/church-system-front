@@ -7,6 +7,8 @@ import {
   Tab,
   Text,
   Flex,
+  Card,
+  CardBody,
 } from "@chakra-ui/react";
 import {
   FaHouse,
@@ -30,6 +32,7 @@ import ClientForm from "./ClientForm";
 import Clients from "./Clients";
 import Debts from "./Debts";
 import DebtForm from "./DebtForm";
+import BarChart from "./BarChart";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -170,6 +173,25 @@ const Home = () => {
         />
         <Route path="/debts/add" element={<DebtForm />} />
         <Route path="/debts/:debtId/edit" element={<DebtForm />} />
+        {/* <Route
+          path="/reports"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Card variant="outline" mb={3}>
+                  <CardBody>
+                    <BarChart />
+                  </CardBody>
+                </Card>
+              </GridItem>
+            </Grid>
+          }
+        /> */}
       </Routes>
       <Tabs
         index={tabsIndex.get(pathName)}
