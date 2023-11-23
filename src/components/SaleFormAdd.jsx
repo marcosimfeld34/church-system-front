@@ -137,9 +137,9 @@ const SaleFormAdd = (props) => {
 
   return (
     <>
-      <Grid templateColumns={{ base: "repeat(12, 1fr)" }} mt={5}>
+      <Grid templateColumns={{ base: "repeat(12, 1fr)" }} mt={5} mb={10}>
         <GridItem colSpan={{ base: 10, md: 8 }} colStart={{ base: 2, md: 3 }}>
-          <Card mb={3} variant="outline">
+          <Card mb={10} variant="outline">
             <CardBody>
               <Heading mb={3} textAlign="center" size="lg">
                 Nueva venta:
