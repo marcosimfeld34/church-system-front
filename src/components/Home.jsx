@@ -33,6 +33,7 @@ import Clients from "./Clients";
 import Debts from "./Debts";
 import DebtForm from "./DebtForm";
 import BarChart from "./BarChart";
+import PageNotFound from "./PageNotFound";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -188,6 +189,21 @@ const Home = () => {
                     <BarChart />
                   </CardBody>
                 </Card>
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route
+          path="/*"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <PageNotFound />
               </GridItem>
             </Grid>
           }
