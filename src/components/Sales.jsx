@@ -1,5 +1,3 @@
-import { useQuery } from "react-query";
-
 import {
   Grid,
   Button,
@@ -17,6 +15,8 @@ import { AddIcon } from "@chakra-ui/icons";
 
 import { useNavigate } from "react-router-dom";
 
+import { useFetchData } from "../hooks/useFetchData";
+
 // components
 import Sale from "./Sale";
 
@@ -30,20 +30,9 @@ const Sales = () => {
   const { getSaleDetails } = useSaleDetailContext();
   const { getDebts } = useDebtContext();
 
-  const { data: saleDetails } = useQuery({
-    queryKey: ["saleDetails"],
-    queryFn: getSaleDetails,
-  });
-
-  const { data: sales, isLoading } = useQuery({
-    queryKey: ["sales"],
-    queryFn: getSales,
-  });
-
-  const { data: debts } = useQuery({
-    queryKey: ["debts"],
-    queryFn: getDebts,
-  });
+  const querySaleDetails = useFetchData(["saleDetails"], getSaleDetails);
+  const querySales = useFetchData(["sales"], getSales);
+  const queryDebts = useFetchData(["debts"], getDebts);
 
   const navigate = useNavigate();
 
@@ -51,33 +40,33 @@ const Sales = () => {
     navigate("/add");
   };
 
-  const totalCostSold = saleDetails
+  const totalCostSold = querySaleDetails?.data
     ?.map((saleDetail) => saleDetail.product.costPrice * saleDetail.quantity)
     ?.reduce((acc, currentValue) => acc + currentValue, 0);
 
-  const totalSalesAmount = sales
+  const totalSalesAmount = querySales?.data
     ?.map((sale) => sale?.total)
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
 
   const totalProfit = totalSalesAmount - totalCostSold;
 
-  const saleList = sales?.map((sale) => {
+  const saleList = querySales?.data?.map((sale) => {
     return (
       <Sale
         key={sale._id}
         sale={sale}
-        saleDetails={saleDetails?.filter(
+        saleDetails={querySaleDetails?.data?.filter(
           (saleDetail) => saleDetail.sale === sale._id
         )}
-        debt={debts?.filter((debt) => debt.sale._id === sale._id)[0]}
+        debt={queryDebts?.data?.filter((debt) => debt.sale._id === sale._id)[0]}
       />
     );
   });
 
   return (
     <>
-      {isLoading && (
+      {querySales.isLoading && (
         <Grid
           templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
           gap={2}
@@ -112,7 +101,7 @@ const Sales = () => {
           </Card>
         </Grid>
       )}
-      {!isLoading && (
+      {!querySales?.isLoading && (
         <Grid
           templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
           gap={2}
@@ -128,7 +117,11 @@ const Sales = () => {
                         style: "currency",
                         minimumFractionDigits: 2,
                         currency: "USD",
-                      }).format(saleDetails?.length > 0 ? totalSalesAmount : 0)
+                      }).format(
+                        querySaleDetails?.data?.length > 0
+                          ? totalSalesAmount
+                          : 0
+                      )
                     : new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
@@ -148,7 +141,9 @@ const Sales = () => {
                         style: "currency",
                         minimumFractionDigits: 2,
                         currency: "USD",
-                      }).format(saleDetails?.length > 0 ? totalCostSold : 0)
+                      }).format(
+                        querySaleDetails?.data?.length > 0 ? totalCostSold : 0
+                      )
                     : new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
@@ -168,7 +163,9 @@ const Sales = () => {
                         style: "currency",
                         minimumFractionDigits: 2,
                         currency: "USD",
-                      }).format(saleDetails?.length > 0 ? totalProfit : 0)
+                      }).format(
+                        querySaleDetails?.data?.length > 0 ? totalProfit : 0
+                      )
                     : new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
@@ -197,7 +194,7 @@ const Sales = () => {
         </CardBody>
       </Card>
 
-      {isLoading && (
+      {querySales?.isLoading && (
         <>
           <Card variant="outline" mb={3}>
             <CardBody>
@@ -247,8 +244,10 @@ const Sales = () => {
         </>
       )}
 
-      {sales?.length > 0 && !isLoading && <Grid>{saleList}</Grid>}
-      {sales?.length === 0 && !isLoading && (
+      {querySales?.data?.length > 0 && !querySales?.isLoading && (
+        <Grid>{saleList}</Grid>
+      )}
+      {querySales?.data?.length === 0 && !querySales?.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Alert colorScheme="purple" status="success">

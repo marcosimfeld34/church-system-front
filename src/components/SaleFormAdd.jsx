@@ -48,10 +48,13 @@ const SaleFormAdd = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      client: "",
+      client:
+        clients?.filter((client) =>
+          client?.name.toLowerCase().includes("consumidor")
+        )[0]?._id || "",
       isPaid: true,
       isLoading: false,
-      saleItems: [{ product: "", quantity: "" }],
+      saleItems: [{ product: "", quantity: 1 }],
     },
     validationSchema: SaleSchema,
     enableReinitialize: true,
@@ -113,7 +116,7 @@ const SaleFormAdd = (props) => {
   const handleAddRow = () => {
     formik.setFieldValue("saleItems", [
       ...formik.values.saleItems,
-      { product: "", quantity: "" },
+      { product: "", quantity: 1 },
     ]);
   };
 
@@ -150,6 +153,9 @@ const SaleFormAdd = (props) => {
                     <FormControl isInvalid={formik.errors.client}>
                       <FormLabel>Nombre cliente:</FormLabel>
                       <Select
+                        value={clientsOptions?.filter(
+                          (client) => client.value === formik.values.client
+                        )}
                         options={clientsOptions}
                         onChange={handleSelectClient}
                         name="client"
