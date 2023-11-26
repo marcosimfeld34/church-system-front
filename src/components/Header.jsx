@@ -81,7 +81,7 @@ const Header = () => {
               fontFamily={"heading"}
               color={useColorModeValue("gray.800", "white")}
             >
-              RIO
+              Worship Sys
             </Text>
           </Flex>
 

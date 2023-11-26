@@ -6,8 +6,8 @@ const manifestForPlugIn = {
   registerType: "prompt",
   includeAssests: ["favicon.ico", "logo.png", "log.png"],
   manifest: {
-    short_name: "EL RIO",
-    name: "EL RIO",
+    short_name: "Worship Sys",
+    name: "Worship Sys",
     icons: [
       {
         src: "favicon.ico",
