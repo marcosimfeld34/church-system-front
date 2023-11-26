@@ -4,10 +4,10 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const manifestForPlugIn = {
   registerType: "prompt",
-  includeAssests: ["favicon.ico", "logo256.png", "logo512.png"],
+  includeAssests: ["favicon.ico", "logo.png", "log.png"],
   manifest: {
-    short_name: "Church System",
-    name: "Church System",
+    short_name: "EL RIO",
+    name: "EL RIO",
     icons: [
       {
         src: "favicon.ico",
@@ -15,12 +15,12 @@ const manifestForPlugIn = {
         type: "image/x-icon",
       },
       {
-        src: "logo256.png",
+        src: "logo.png",
         type: "image/png",
         sizes: "192x192",
       },
       {
-        src: "logo512.png",
+        src: "logo.png",
         type: "image/png",
         sizes: "512x512",
       },
