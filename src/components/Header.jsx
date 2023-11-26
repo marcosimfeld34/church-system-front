@@ -9,9 +9,7 @@ import {
   Stack,
   Collapse,
   Icon,
-  // Popover,
-  // PopoverTrigger,
-  // PopoverContent,
+  Image,
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
@@ -24,6 +22,8 @@ import {
   // ChevronRightIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
+
+import Logo from "../../public/logo.svg";
 
 // custom hooks
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -68,13 +68,22 @@ const Header = () => {
           flex={{ base: 1 }}
           justify={{ base: "center", md: "space-between" }}
         >
-          <Text
-            textAlign={useBreakpointValue({ base: "center", md: "left" })}
-            fontFamily={"heading"}
-            color={useColorModeValue("gray.800", "white")}
-          >
-            Worship System
-          </Text>
+          <Flex gap={1}>
+            <Image
+              borderRadius="full"
+              boxSize={{ base: 50, md: 25 }}
+              src={Logo}
+              alt="el rio logo"
+            />
+            <Text
+              display={{ base: "none", md: "flex" }}
+              textAlign={useBreakpointValue({ base: "center", md: "left" })}
+              fontFamily={"heading"}
+              color={useColorModeValue("gray.800", "white")}
+            >
+              RIO
+            </Text>
+          </Flex>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
             <DesktopNav user={user} />

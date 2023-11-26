@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   CardBody,
-  Heading,
+  Image,
   FormLabel,
   FormControl,
   FormErrorMessage,
@@ -16,6 +16,7 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  Box,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
@@ -23,6 +24,8 @@ import * as Yup from "yup";
 
 // formik
 import { useFormik } from "formik";
+
+import Logo from "../../public/logo.svg";
 
 // custom hooks
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -121,9 +124,14 @@ const Login = () => {
           >
             <Card mb={3} variant="outline">
               <CardBody>
-                <Heading mb={3} textAlign="center" size="lg">
-                  Worship System
-                </Heading>
+                <Box p={2} display={"flex"} placeContent={"center"}>
+                  <Image
+                    borderRadius="full"
+                    boxSize={{ base: 100, md: 150 }}
+                    src={Logo}
+                    alt="el rio logo"
+                  />
+                </Box>
                 <form noValidate onSubmit={handleSubmit}>
                   <Grid mb={4}>
                     <GridItem>
