@@ -57,6 +57,7 @@ const CategoryFormAdd = (props) => {
                         type="text"
                         value={values.name}
                         onChange={handleChange}
+                        isDisabled={values.isLoading}
                         placeholder="Nombre de la categoria"
                         isInvalid={errors.name && touched.name}
                         required

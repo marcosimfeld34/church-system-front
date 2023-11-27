@@ -57,6 +57,7 @@ const ClientFormEdit = (props) => {
                         type="text"
                         value={values.name}
                         onChange={handleChange}
+                        isDisabled={values.isLoading}
                         placeholder="Nombre del cliente"
                         isInvalid={errors.name && touched.name}
                         required

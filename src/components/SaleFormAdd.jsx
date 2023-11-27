@@ -161,6 +161,7 @@ const SaleFormAdd = (props) => {
                         name="client"
                         placeholder="Buscar cliente"
                         noOptionsMessage={() => "No hay clientes"}
+                        isDisabled={formik.values.isLoading}
                         isInvalid={
                           formik.errors.client && formik.touched.client
                         }
@@ -186,6 +187,7 @@ const SaleFormAdd = (props) => {
                         value={formik.values.isPaid}
                         defaultChecked={formik.values.isPaid}
                         onChange={formik.handleChange}
+                        isDisabled={formik.values.isLoading}
                         colorScheme="purple"
                         placeholder="Pagado"
                       >
@@ -252,6 +254,7 @@ const SaleFormAdd = (props) => {
                                     }
                                     noOptionsMessage={() => "No hay productos"}
                                     name={`saleItems[${index}].product`}
+                                    isDisabled={formik.values.isLoading}
                                     value={productsOptions?.filter(
                                       (product) =>
                                         product.value ===
@@ -281,6 +284,7 @@ const SaleFormAdd = (props) => {
                                       formik.values.saleItems[index].quantity
                                     }
                                     onChange={formik.handleChange}
+                                    isDisabled={formik.values.isLoading}
                                     placeholder="Cantidad"
                                     required
                                   />

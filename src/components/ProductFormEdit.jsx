@@ -82,6 +82,7 @@ const ProductFormEdit = (props) => {
                         type="text"
                         value={values.name}
                         onChange={handleChange}
+                        isDisabled={values.isLoading}
                         placeholder="Nombre producto"
                         isInvalid={errors.name && touched.name}
                         required
@@ -99,6 +100,7 @@ const ProductFormEdit = (props) => {
                         type="number"
                         value={values.costPrice}
                         onChange={handleChange}
+                        isDisabled={values.isLoading}
                         placeholder="Precio de costo"
                         isInvalid={errors.costPrice && touched.costPrice}
                         required
@@ -116,6 +118,7 @@ const ProductFormEdit = (props) => {
                         type="number"
                         min={0}
                         value={values.salePrice}
+                        isDisabled={values.isLoading}
                         onChange={handleChange}
                         placeholder="Precio de venta"
                         isInvalid={errors.salePrice && touched.salePrice}
@@ -155,6 +158,7 @@ const ProductFormEdit = (props) => {
                       <Select
                         options={categoriesOptions}
                         onChange={handleSelectCategories}
+                        isDisabled={values.isLoading}
                         value={categoriesOptions?.filter(
                           (category) => category.value === values.category
                         )}
@@ -176,6 +180,7 @@ const ProductFormEdit = (props) => {
                         name="stock"
                         type="number"
                         value={values.stock}
+                        isDisabled={values.isLoading}
                         onChange={handleChange}
                         placeholder="Stock"
                         isInvalid={errors.stock && touched.stock}

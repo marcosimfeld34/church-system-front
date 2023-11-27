@@ -144,6 +144,7 @@ const DebtFormEdit = (props) => {
                         name="deliveredAmount"
                         type="number"
                         value={values.deliveredAmount}
+                        isDisabled={values.isLoading}
                         onChange={handleChange}
                         placeholder="Monto saldado"
                         isInvalid={
