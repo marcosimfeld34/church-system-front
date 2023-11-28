@@ -93,28 +93,20 @@ const SaleFormEdit = (props) => {
         products?.forEach((product) => {
           if (
             product._id === saleItem.product &&
-            product.stock + saleItemInitialByProductId.get(product._id) <
+            saleItem.quantity !== saleItemInitialByProductId.get(product._id) &&
+            product.stock + (saleItemInitialByProductId.get(product._id) || 0) <
               saleItem.quantity
           ) {
             productsWithoutStock.push(saleItem);
 
             formik.setFieldError(
               `saleItems[${index}].quantity`,
-              `${saleItemInitialByProductId.get(
-                product._id
-              )} (Cantidad inicial) + ${product.stock} (stock disponible) = ${
-                saleItemInitialByProductId.get(product._id) + product.stock
+              `${
+                saleItemInitialByProductId.get(product._id) || 0
+              } (Cantidad inicial) + ${product.stock} (stock disponible) = ${
+                (saleItemInitialByProductId.get(product._id) || 0) +
+                product.stock
               } (Máximo)`
-            );
-          } else if (
-            product._id === saleItem.product &&
-            product.stock < saleItem.quantity
-          ) {
-            productsWithoutStock.push(saleItem);
-
-            formik.setFieldError(
-              `saleItems[${index}].quantity`,
-              `Supera el stock: ${product.stock}`
             );
           }
         });
