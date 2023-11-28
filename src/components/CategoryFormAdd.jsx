@@ -24,19 +24,18 @@ const CategoryFormAdd = (props) => {
     name: Yup.string().required("Requerido"),
   });
 
-  const { handleSubmit, values, handleChange, errors, touched, setFieldValue } =
-    useFormik({
-      initialValues: {
-        name: "",
-        isLoading: false,
-      },
-      validationSchema: CategorySchema,
-      enableReinitialize: true,
-      onSubmit: (values) => {
-        setFieldValue("isLoading", true);
-        onSubmit(values);
-      },
-    });
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      isLoading: false,
+    },
+    validationSchema: CategorySchema,
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      formik.setFieldValue("isLoading", true);
+      onSubmit(values);
+    },
+  });
 
   return (
     <>
@@ -47,22 +46,30 @@ const CategoryFormAdd = (props) => {
               <Heading mb={3} textAlign="center" size="lg">
                 Nueva categoria:
               </Heading>
-              <form noValidate onSubmit={handleSubmit}>
+              <form noValidate onSubmit={formik.handleSubmit}>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.name}>
-                      <FormLabel>Nombre</FormLabel>
+                    <FormControl
+                      isInvalid={formik.errors.name && formik.touched.name}
+                    >
+                      <FormLabel htmlFor="name">Nombre</FormLabel>
                       <Input
                         name="name"
+                        id="name"
                         type="text"
-                        value={values.name}
-                        onChange={handleChange}
-                        isDisabled={values.isLoading}
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isDisabled={formik.values.isLoading}
                         placeholder="Nombre de la categoria"
-                        isInvalid={errors.name && touched.name}
+                        isInvalid={formik.errors.name && formik.touched.name}
                         required
                       />
-                      <FormErrorMessage>{errors.name}</FormErrorMessage>
+                      {formik.errors.name && formik.touched.name && (
+                        <FormErrorMessage>
+                          {formik.errors.name}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
@@ -73,7 +80,7 @@ const CategoryFormAdd = (props) => {
                   align="stretch"
                 >
                   <Button
-                    isLoading={values.isLoading}
+                    isLoading={formik.values.isLoading}
                     type="submit"
                     colorScheme="purple"
                     variant="solid"

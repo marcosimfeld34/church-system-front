@@ -142,11 +142,14 @@ const SaleFormEdit = (props) => {
   );
 
   const handleSelectProduct = (value, index) => {
-    formik.setFieldValue(`saleItems[${index}].product`, value.value);
+    formik.setFieldValue(
+      `saleItems[${index}].product`,
+      value?.value ? value.value : ""
+    );
   };
 
-  const handleSelectClient = ({ value }) => {
-    formik.setFieldValue("client", value);
+  const handleSelectClient = (options) => {
+    formik.setFieldValue("client", options?.value ? options?.value : "");
   };
 
   const handleAddRow = () => {
@@ -220,6 +223,10 @@ const SaleFormEdit = (props) => {
     formik.setFieldValue("saleItems", filteredProducts);
   };
 
+  const handleProductBlur = (isTouched, index) => {
+    formik.setFieldTouched(`saleItems[${index}].product`, isTouched);
+  };
+
   const productsOptions = products?.map((product) => {
     return { label: product.name, value: product._id };
   });
@@ -242,13 +249,20 @@ const SaleFormEdit = (props) => {
             <form noValidate onSubmit={formik.handleSubmit}>
               <Grid mb={4}>
                 <GridItem>
-                  <FormControl isInvalid={formik.errors.client}>
-                    <FormLabel>Nombre cliente:</FormLabel>
+                  <FormControl
+                    isInvalid={formik.errors.client && formik.touched.client}
+                  >
+                    <FormLabel htmlFor="client">Nombre cliente:</FormLabel>
                     <Select
                       options={clientsOptions}
                       onChange={handleSelectClient}
+                      onBlur={(isTouched) =>
+                        formik.setFieldTouched("client", isTouched)
+                      }
                       isDisabled={formik.values.isLoading}
                       name="client"
+                      id="client"
+                      isClearable={true}
                       noOptionsMessage={() => "No hay clientes"}
                       value={clientsOptions?.filter(
                         (client) => client.value === formik.values.client
@@ -257,7 +271,11 @@ const SaleFormEdit = (props) => {
                       isInvalid={formik.errors.client && formik.touched.client}
                       required
                     />
-                    <FormErrorMessage>{formik.errors.client}</FormErrorMessage>
+                    {formik.errors.client && formik.touched.client && (
+                      <FormErrorMessage>
+                        {formik.errors.client}
+                      </FormErrorMessage>
+                    )}
                   </FormControl>
                 </GridItem>
               </Grid>
@@ -265,10 +283,11 @@ const SaleFormEdit = (props) => {
               <Grid mb={4}>
                 <GridItem>
                   <FormControl>
-                    <FormLabel>Pagado?</FormLabel>
+                    <FormLabel htmlFor="isPaid">Pagado?</FormLabel>
                     {formik.values.isPaid !== undefined && (
                       <Checkbox
                         name="isPaid"
+                        id="isPaid"
                         type="checkbox"
                         value={formik?.values?.isPaid}
                         isDisabled={formik.values.isLoading}
@@ -329,7 +348,9 @@ const SaleFormEdit = (props) => {
                             >
                               <FormControl
                                 isInvalid={
-                                  formik?.errors?.saleItems?.at(index)?.product
+                                  formik?.errors?.saleItems?.at(index)
+                                    ?.product &&
+                                  formik?.touched?.saleItems?.at(index)?.product
                                 }
                               >
                                 <Select
@@ -344,6 +365,11 @@ const SaleFormEdit = (props) => {
                                       formik?.values?.saleItems[index]?.product
                                   )}
                                   name={`saleItems[${index}].product`}
+                                  id={`saleItems[${index}].product`}
+                                  onBlur={(isTouched) =>
+                                    handleProductBlur(isTouched, index)
+                                  }
+                                  isClearable={true}
                                   isDisabled={formik.values.isLoading}
                                   placeholder="Buscar producto ..."
                                   isInvalid={
@@ -354,25 +380,35 @@ const SaleFormEdit = (props) => {
                                   }
                                   required
                                 />
-                                <FormErrorMessage>
-                                  {
-                                    formik?.errors?.saleItems?.at(index)
-                                      ?.product
-                                  }
-                                </FormErrorMessage>
+                                {formik?.errors?.saleItems?.at(index)
+                                  ?.product &&
+                                  formik?.touched?.saleItems?.at(index)
+                                    ?.product && (
+                                    <FormErrorMessage>
+                                      {
+                                        formik?.errors?.saleItems?.at(index)
+                                          ?.product
+                                      }
+                                    </FormErrorMessage>
+                                  )}
                               </FormControl>
                               <FormControl
                                 isInvalid={
-                                  formik?.errors?.saleItems?.at(index)?.quantity
+                                  formik?.errors?.saleItems?.at(index)
+                                    ?.quantity &&
+                                  formik?.touched?.saleItems?.at(index)
+                                    ?.quantity
                                 }
                               >
                                 <Input
                                   name={`saleItems[${index}].quantity`}
+                                  id={`saleItems[${index}].quantity`}
                                   type="number"
                                   value={
                                     formik?.values?.saleItems[index]?.quantity
                                   }
                                   onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
                                   isDisabled={formik.values.isLoading}
                                   placeholder="Cantidad"
                                   isInvalid={
@@ -383,12 +419,17 @@ const SaleFormEdit = (props) => {
                                   }
                                   required
                                 />
-                                <FormErrorMessage>
-                                  {
-                                    formik?.errors?.saleItems?.at(index)
-                                      ?.quantity
-                                  }
-                                </FormErrorMessage>
+                                {formik?.errors?.saleItems?.at(index)
+                                  ?.quantity &&
+                                  formik?.touched?.saleItems?.at(index)
+                                    ?.quantity && (
+                                    <FormErrorMessage>
+                                      {
+                                        formik?.errors?.saleItems?.at(index)
+                                          ?.quantity
+                                      }
+                                    </FormErrorMessage>
+                                  )}
                               </FormControl>
                               <Text>
                                 Subtotal:{" "}

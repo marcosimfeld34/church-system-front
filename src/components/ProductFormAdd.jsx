@@ -35,26 +35,25 @@ const ProductFormAdd = (props) => {
     stock: Yup.number().required("Requerido"),
   });
 
-  const { handleSubmit, values, handleChange, errors, touched, setFieldValue } =
-    useFormik({
-      initialValues: {
-        name: "",
-        costPrice: "",
-        salePrice: "",
-        category: "",
-        stock: "",
-        isLoading: false,
-      },
-      validationSchema: ProductSchema,
-      enableReinitialize: true,
-      onSubmit: (values) => {
-        setFieldValue("isLoading", true);
-        onSubmit(values);
-      },
-    });
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      costPrice: "",
+      salePrice: "",
+      category: "",
+      stock: "",
+      isLoading: false,
+    },
+    validationSchema: ProductSchema,
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      formik.setFieldValue("isLoading", true);
+      onSubmit(values);
+    },
+  });
 
-  const handleSelectCategories = ({ value }) => {
-    setFieldValue("category", value);
+  const handleSelectCategories = (options) => {
+    formik.setFieldValue("category", options?.value ? options?.value : "");
   };
 
   const categoriesOptions = categories?.map((category) => {
@@ -73,60 +72,96 @@ const ProductFormAdd = (props) => {
               <Heading mb={3} textAlign="center" size="lg">
                 Nuevo producto:
               </Heading>
-              <form noValidate onSubmit={handleSubmit}>
+              <form noValidate onSubmit={formik.handleSubmit}>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.name}>
-                      <FormLabel>Nombre</FormLabel>
+                    <FormControl
+                      isInvalid={formik.errors.name && formik.touched.name}
+                    >
+                      <FormLabel htmlFor="name">Nombre</FormLabel>
                       <Input
                         name="name"
+                        id="name"
                         type="text"
-                        value={values.name}
-                        isDisabled={values.isLoading}
-                        onChange={handleChange}
+                        value={formik.values.name}
+                        isDisabled={formik.values.isLoading}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         placeholder="Nombre producto"
-                        isInvalid={errors.name && touched.name}
+                        isInvalid={formik.errors.name && formik.touched.name}
                         required
                       />
-                      <FormErrorMessage>{errors.name}</FormErrorMessage>
+                      {formik.errors.name && formik.touched.name && (
+                        <FormErrorMessage>
+                          {formik.errors.name}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.costPrice}>
-                      <FormLabel>Precio de costo:</FormLabel>
+                    <FormControl
+                      isInvalid={
+                        formik.errors.costPrice && formik.touched.costPrice
+                      }
+                    >
+                      <FormLabel htmlFor="costPrice">
+                        Precio de costo:
+                      </FormLabel>
                       <Input
                         name="costPrice"
+                        id="costPrice"
                         type="number"
                         min={0}
-                        value={values.costPrice}
-                        isDisabled={values.isLoading}
-                        onChange={handleChange}
+                        value={formik.values.costPrice}
+                        isDisabled={formik.values.isLoading}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         placeholder="Precio de costo"
-                        isInvalid={errors.costPrice && touched.costPrice}
+                        isInvalid={
+                          formik.errors.costPrice && formik.touched.costPrice
+                        }
                         required
                       />
-                      <FormErrorMessage>{errors.costPrice}</FormErrorMessage>
+                      {formik.errors.name && formik.touched.name && (
+                        <FormErrorMessage>
+                          {formik.errors.costPrice}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.salePrice}>
-                      <FormLabel>Precio de venta:</FormLabel>
+                    <FormControl
+                      isInvalid={
+                        formik.errors.salePrice && formik.touched.salePrice
+                      }
+                    >
+                      <FormLabel htmlFor="salePrice">
+                        Precio de venta:
+                      </FormLabel>
                       <Input
                         name="salePrice"
+                        id="salePrice"
                         type="number"
                         min={0}
-                        value={values.salePrice}
-                        isDisabled={values.isLoading}
-                        onChange={handleChange}
+                        value={formik.values.salePrice}
+                        isDisabled={formik.values.isLoading}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         placeholder="Precio de venta"
-                        isInvalid={errors.salePrice && touched.salePrice}
+                        isInvalid={
+                          formik.errors.salePrice && formik.touched.salePrice
+                        }
                         required
                       />
-                      <FormErrorMessage>{errors.salePrice}</FormErrorMessage>
+                      {formik.errors.name && formik.touched.name && (
+                        <FormErrorMessage>
+                          {formik.errors.salePrice}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
@@ -136,14 +171,16 @@ const ProductFormAdd = (props) => {
                       <FormLabel>Porcentaje de ganancia:</FormLabel>
                       <Text>
                         Porcentaje de ganancia (%):{" "}
-                        {values.costPrice && values.salePrice
+                        {formik.values.costPrice && formik.values.salePrice
                           ? (
-                              (values.salePrice / values.costPrice - 1) *
+                              (formik.values.salePrice /
+                                formik.values.costPrice -
+                                1) *
                               100
                             ).toFixed(2)
                           : 0}
                       </Text>
-                      {values.salePrice < values.costPrice ? (
+                      {formik.values.salePrice < formik.values.costPrice ? (
                         <Text fontSize={"sm"} color={"red.500"}>
                           El precio de venta debe ser mayor al costo de venta
                         </Text>
@@ -155,38 +192,61 @@ const ProductFormAdd = (props) => {
                 </Grid>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.category}>
-                      <FormLabel>Categoria:</FormLabel>
+                    <FormControl
+                      isInvalid={
+                        formik.errors.category && formik.touched.category
+                      }
+                    >
+                      <FormLabel htmlFor="category">Categoria:</FormLabel>
                       <Select
                         options={categoriesOptions}
                         onChange={handleSelectCategories}
-                        isDisabled={values.isLoading}
+                        onBlur={(isTouched) =>
+                          formik.setFieldTouched("category", isTouched)
+                        }
+                        isClearable={true}
+                        isDisabled={formik.values.isLoading}
                         name="category"
+                        id="category"
                         placeholder="Buscar categoria ..."
                         noOptionsMessage={() => "No hay categorias"}
-                        isInvalid={errors.category && touched.category}
+                        isInvalid={
+                          formik.errors.category && formik.touched.category
+                        }
                         required
                       />
-                      <FormErrorMessage>{errors.category}</FormErrorMessage>
+                      {formik.errors.category && formik.touched.category && (
+                        <FormErrorMessage>
+                          {formik.errors.category}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.stock}>
-                      <FormLabel>Stock:</FormLabel>
+                    <FormControl
+                      isInvalid={formik.errors.stock && formik.touched.stock}
+                    >
+                      <FormLabel htmlFor="stock">Stock:</FormLabel>
                       <Input
                         name="stock"
+                        id="stock"
                         type="number"
                         min={0}
-                        value={values.stock}
-                        isDisabled={values.isLoading}
-                        onChange={handleChange}
+                        value={formik.values.stock}
+                        isDisabled={formik.values.isLoading}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         placeholder="Stock"
-                        isInvalid={errors.stock && touched.stock}
+                        isInvalid={formik.errors.stock && formik.touched.stock}
                         required
                       />
-                      <FormErrorMessage>{errors.stock}</FormErrorMessage>
+                      {formik.errors.stock && formik.touched.stock && (
+                        <FormErrorMessage>
+                          {formik.errors.stock}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
@@ -197,7 +257,7 @@ const ProductFormAdd = (props) => {
                   align="stretch"
                 >
                   <Button
-                    isLoading={values.isLoading}
+                    isLoading={formik.values.isLoading}
                     type="submit"
                     colorScheme="purple"
                     variant="solid"
