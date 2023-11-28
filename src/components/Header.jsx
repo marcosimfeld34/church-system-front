@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Box,
   Flex,
@@ -23,7 +21,7 @@ import {
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 
-import Logo from "../../public/logo.svg";
+import Logo from "/logo.svg";
 
 // custom hooks
 import { useAuthContext } from "../hooks/useAuthContext";

@@ -65,7 +65,6 @@ export const UserContextProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await loginService.login({ email, password });
-
       if (response.status === 200) {
         setUser(response.user);
         window.localStorage.setItem("user", JSON.stringify(response.user));
@@ -76,21 +75,7 @@ export const UserContextProvider = ({ children }) => {
       }
     } catch (error) {
       setIsLoading(false);
-      if (
-        error.response.data.status === 404 &&
-        error.response.data.message === "INVALID_CREDENTIALS"
-      ) {
-        // handleSetMessage(INVALID_CREDENTIALS);
-        // handleSetType("danger");
-        // handleSetRecordType("user");
-      } else if (
-        error.response.data.status === 404 &&
-        error.response.data.message === "NOT_FOUND"
-      ) {
-        // handleSetMessage(NOT_FOUND);
-        // handleSetType("danger");
-        // handleSetRecordType("user");
-      }
+      return error.response;
     }
   };
 

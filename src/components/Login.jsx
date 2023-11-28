@@ -22,10 +22,12 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import * as Yup from "yup";
 
+import { useToast } from "@chakra-ui/react";
+
 // formik
 import { useFormik } from "formik";
 
-import Logo from "../../public/logo.svg";
+import Logo from "/logo.svg";
 
 // custom hooks
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -35,6 +37,8 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+
+  const toast = useToast();
 
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
@@ -52,11 +56,21 @@ const Login = () => {
   const { login, user } = useAuthContext();
 
   const onSubmit = async ({ email, password }) => {
-    const response = await login(email, password);
-    if (response && response.status === 200) {
-      // clearMessages();
-      navigate(from, { replace: true });
+    setFieldValue("isLoading", true);
+
+    const { data } = await login(email, password);
+
+    if (data?.status === 404) {
+      setFieldValue("isLoading", false);
+      toast({
+        title: "Credenciales incorrectas",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     }
+
+    if (data?.status === 200) navigate(from, { replace: true });
   };
 
   const LoginSchema = Yup.object().shape({
@@ -66,18 +80,16 @@ const Login = () => {
     password: Yup.string().min(6, "Muy corta!").required("Requerido"),
   });
 
-  const { handleSubmit, values, setFieldValue, errors, touched } = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-      isLoading: false,
-    },
-    validationSchema: LoginSchema,
-    onSubmit: (values) => {
-      setFieldValue("isLoading", true);
-      onSubmit(values);
-    },
-  });
+  const { handleSubmit, values, setFieldValue, errors, touched, handleBlur } =
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+        isLoading: false,
+      },
+      validationSchema: LoginSchema,
+      onSubmit,
+    });
 
   const onChangeEmail = (e) => {
     setFieldValue("email", e.target.value);
@@ -97,12 +109,12 @@ const Login = () => {
     navigate("/register");
   };
 
-  const handleRecoverPassword = () => {
-    // handleSetMessage(null);
-    // handleSetType(null);
-    // handleSetRecordType(null);
-    // navigate("/forgot-password");
-  };
+  // const handleRecoverPassword = () => {
+  // handleSetMessage(null);
+  // handleSetType(null);
+  // handleSetRecordType(null);
+  // navigate("/forgot-password");
+  // };
 
   // const showMessage = () => {
   //   return message !== null && recordType === "user";
@@ -135,31 +147,41 @@ const Login = () => {
                 <form noValidate onSubmit={handleSubmit}>
                   <Grid mb={4}>
                     <GridItem>
-                      <FormControl isInvalid={errors.email}>
-                        <FormLabel>Email</FormLabel>
+                      <FormControl isInvalid={touched.email && errors.email}>
+                        <FormLabel htmlFor="email">Email</FormLabel>
                         <Input
                           type="email"
                           value={values.email}
+                          name="email"
+                          id="email"
+                          onBlur={handleBlur}
                           onChange={onChangeEmail}
                           placeholder="Ingresá tu email"
-                          isInvalid={errors.email && touched.email}
+                          isInvalid={touched.email && errors.email}
                           required
                         />
-                        <FormErrorMessage>{errors.email}</FormErrorMessage>
+                        {touched.email && errors.email && (
+                          <FormErrorMessage>{errors.email}</FormErrorMessage>
+                        )}
                       </FormControl>
                     </GridItem>
                   </Grid>
                   <Grid mb={4}>
                     <GridItem>
-                      <FormControl isInvalid={errors.password}>
-                        <FormLabel>Contraseña</FormLabel>
+                      <FormControl
+                        isInvalid={touched.password && errors.password}
+                      >
+                        <FormLabel htmlFor="password">Contraseña</FormLabel>
                         <InputGroup size="md">
                           <Input
                             type={show ? "text" : "password"}
                             value={values.password}
+                            name="password"
+                            id="password"
                             onChange={onChangePassword}
+                            onBlur={handleBlur}
                             placeholder="Ingresá tu contraseña"
-                            isInvalid={errors.password && touched.password}
+                            isInvalid={touched.password && errors.password}
                             required
                           />
                           <InputRightElement width="2.5rem">
@@ -173,7 +195,9 @@ const Login = () => {
                             />
                           </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage>{errors.password}</FormErrorMessage>
+                        {touched.password && errors.password && (
+                          <FormErrorMessage>{errors.password}</FormErrorMessage>
+                        )}
                       </FormControl>
                     </GridItem>
                   </Grid>
