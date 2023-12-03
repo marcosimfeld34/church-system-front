@@ -11,8 +11,10 @@ import {
 import { Bar } from "react-chartjs-2";
 import { Text, Card, CardBody, Flex } from "@chakra-ui/react";
 
+import { useQuery } from "react-query";
+
 // custom hooks
-import { useSales } from "../hooks/useSales";
+import { useSaleContext } from "../hooks/useSaleContext";
 
 ChartJS.register(
   LinearScale,
@@ -25,7 +27,12 @@ ChartJS.register(
 );
 
 const BarChart = () => {
-  const querySales = useSales();
+  const { getSales } = useSaleContext();
+
+  const { data: sales, isLoading } = useQuery({
+    queryKey: ["sales"],
+    queryFn: getSales,
+  });
 
   let obj = {
     1: { total: 0 },
@@ -41,7 +48,7 @@ const BarChart = () => {
     11: { total: 0 },
     12: { total: 0 },
   };
-  querySales?.data?.forEach((sale) => {
+  sales?.forEach((sale) => {
     if (obj.hasOwnProperty(new Date(sale.createdAt).getMonth() + 1)) {
       obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total;
     } else {
@@ -57,7 +64,7 @@ const BarChart = () => {
     };
   });
 
-  const total = querySales?.data
+  const total = sales
     ?.map((sale) => sale?.total)
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
@@ -145,11 +152,11 @@ const BarChart = () => {
     })
     .reverse();
 
-  if (!querySales?.isLoading && total?.length === 0) {
+  if (!isLoading && total?.length === 0) {
     return <Text>No hay datos</Text>;
   }
 
-  if (!querySales?.isLoading && total?.length > 0) {
+  if (!isLoading && total?.length > 0) {
     return (
       <>
         <Card variant="outline" mb={3}>
