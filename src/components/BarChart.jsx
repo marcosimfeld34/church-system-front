@@ -11,10 +11,8 @@ import {
 import { Bar } from "react-chartjs-2";
 import { Text, Card, CardBody, Flex } from "@chakra-ui/react";
 
-import { useQuery } from "react-query";
-
 // custom hooks
-import { useSaleContext } from "../hooks/useSaleContext";
+import { useSales } from "../hooks/useSales";
 
 ChartJS.register(
   LinearScale,
@@ -27,12 +25,7 @@ ChartJS.register(
 );
 
 const BarChart = () => {
-  const { getSales } = useSaleContext();
-
-  const { data: sales, isLoading } = useQuery({
-    queryKey: ["sales"],
-    queryFn: getSales,
-  });
+  const querySales = useSales();
 
   let obj = {
     1: { total: 0 },
@@ -48,7 +41,7 @@ const BarChart = () => {
     11: { total: 0 },
     12: { total: 0 },
   };
-  sales?.forEach((sale) => {
+  querySales?.data?.forEach((sale) => {
     if (obj.hasOwnProperty(new Date(sale.createdAt).getMonth() + 1)) {
       obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total;
     } else {
@@ -64,7 +57,7 @@ const BarChart = () => {
     };
   });
 
-  const total = sales
+  const total = querySales?.data
     ?.map((sale) => sale?.total)
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
@@ -117,12 +110,12 @@ const BarChart = () => {
   const data = {
     labels: months
       .slice(currentMonth - 12)
-      .concat(months.slice(0, currentMonth)),
+      .concat(months.slice(currentMonth, currentMonth)),
     datasets: [
       {
         data: arr
           .slice(currentMonth - 12)
-          .concat(arr.slice(0, currentMonth))
+          .concat(arr.slice(currentMonth, currentMonth))
           .map((current) => current.total),
         backgroundColor: ["#805AD5"],
       },
@@ -131,7 +124,7 @@ const BarChart = () => {
 
   const lastTwelveYears = arr
     .slice(currentMonth - 12)
-    .concat(arr.slice(0, currentMonth))
+    .concat(arr.slice(currentMonth, currentMonth))
     .map((current) => {
       return (
         <Card key={current.month} variant="outline" mb={3}>
@@ -152,11 +145,11 @@ const BarChart = () => {
     })
     .reverse();
 
-  if (!isLoading && total?.length === 0) {
+  if (!querySales?.isLoading && total?.length === 0) {
     return <Text>No hay datos</Text>;
   }
 
-  if (!isLoading && total?.length > 0) {
+  if (!querySales?.isLoading && total?.length > 0) {
     return (
       <>
         <Card variant="outline" mb={3}>
@@ -164,7 +157,6 @@ const BarChart = () => {
             <Bar options={options} data={data} />
           </CardBody>
         </Card>
-
         {lastTwelveYears}
       </>
     );
