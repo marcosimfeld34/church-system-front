@@ -1,5 +1,3 @@
-import { useQuery } from "react-query";
-
 import {
   Grid,
   Card,
@@ -14,41 +12,25 @@ import {
 } from "@chakra-ui/react";
 import Select from "react-select";
 
-import { Navigate } from "react-router-dom";
-
 // components
 import Debt from "./Debt";
 
 // custom hooks
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useDebtContext } from "../hooks/useDebtContext";
-import { useClientContext } from "../hooks/useClientContext";
+import { useDebts } from "../hooks/useDebts";
+import { useClients } from "../hooks/useClients";
 import { useState } from "react";
 
 const Debts = () => {
-  const { getDebts } = useDebtContext();
-  const { getClients } = useClientContext();
   const [currentClient, setCurrentClient] = useState("");
 
-  const { user } = useAuthContext();
+  const queryDebts = useDebts();
+  const queryClients = useClients();
 
-  const { data: debts, isLoading } = useQuery({
-    queryKey: ["debts"],
-    queryFn: getDebts,
+  const debtList = queryDebts?.data?.map((debt) => {
+    return <Debt key={debt?._id + debt?.createdAt} debt={debt} />;
   });
 
-  const { data: clients } = useQuery({
-    queryKey: ["clients"],
-    queryFn: getClients,
-  });
-
-  const debtList = debts
-    ?.filter((debt) => debt.isPaid === false)
-    ?.map((debt) => {
-      return <Debt key={debt?._id} debt={debt} />;
-    });
-
-  const totalAmountByClient = debts
+  const totalAmountByClient = queryDebts?.data
     ?.map((debt) => {
       if (debt.client._id === currentClient) {
         return debt?.initialAmount - debt?.deliveredAmount;
@@ -58,7 +40,7 @@ const Debts = () => {
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
 
-  const totalAmountDebts = debts
+  const totalAmountDebts = queryDebts?.data
     ?.map((debt) => debt?.initialAmount - debt?.deliveredAmount)
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
@@ -67,16 +49,13 @@ const Debts = () => {
     setCurrentClient(option?.value ? option?.value : "");
   };
 
-  const clientsOptions = clients?.map((client) => {
+  const clientsOptions = queryClients?.data?.map((client) => {
     return { label: client.name, value: client._id };
   });
 
   return (
     <>
-      {user.profile !== "System Administrator" && (
-        <Navigate to="/" replace={true} />
-      )}
-      {isLoading && (
+      {queryDebts?.isLoading && (
         <Card variant="outline" mt={5}>
           <CardBody>
             <Stack>
@@ -87,7 +66,7 @@ const Debts = () => {
           </CardBody>
         </Card>
       )}
-      {!isLoading && (
+      {!queryDebts.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Flex direction={"column"}>
@@ -144,7 +123,7 @@ const Debts = () => {
         </CardBody>
       </Card>
 
-      {isLoading && (
+      {queryDebts?.isLoading && (
         <>
           <Card variant="outline" mb={3}>
             <CardBody>
@@ -194,11 +173,12 @@ const Debts = () => {
         </>
       )}
 
-      {debtList?.length > 0 && !isLoading && <Grid>{debtList}</Grid>}
-      {debtList?.length === 0 && !isLoading && (
+      {debtList?.length > 0 && !queryDebts?.isLoading && (
+        <Grid>{debtList}</Grid>
+      )}
+      {debtList?.length === 0 && !queryDebts?.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
-            {/* <Text>No hay deudas 😂. </Text> */}
             <Alert colorScheme="purple" status="success">
               <AlertIcon />
               Tus clientes están al día.

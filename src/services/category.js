@@ -1,43 +1,46 @@
-import axios from "axios";
-import { BACKEND_BASE_URL } from "./api";
-
-const baseUrl = `${BACKEND_BASE_URL}/api/v1/categories`;
+const CATEGORY_URL = "/api/v1/categories";
 
 const categoryService = {
-  getAll: async (filters) => {
+  getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
     if (filters.month && filters.year) {
-      finalUrl = `${baseUrl}?month=${filters.month}&year=${filters.year}`;
+      finalUrl = `${CATEGORY_URL}?month=${filters.month}&year=${filters.year}`;
     } else {
-      finalUrl = baseUrl;
+      finalUrl = CATEGORY_URL;
     }
 
-    const { data } = await axios.get(finalUrl, { withCredentials: true });
-    return data;
-  },
-  getOne: async (id) => {
-    const { data } = await axios.get(`${baseUrl}/${id}`, {
+    const { data } = await axiosPrivate.get(finalUrl, {
       withCredentials: true,
     });
     return data;
   },
-  store: async (newCategory) => {
-    const { data } = await axios.post(baseUrl, newCategory, {
+  getOne: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.get(`${CATEGORY_URL}/${id}`, {
       withCredentials: true,
     });
     return data;
   },
-  delete: async (id) => {
-    const { data } = await axios.delete(`${baseUrl}/${id}`, {
+  store: async (newCategory, axiosPrivate) => {
+    const { data } = await axiosPrivate.post(CATEGORY_URL, newCategory, {
       withCredentials: true,
     });
     return data;
   },
-  update: async (id, categoryToUpdate) => {
-    const { data } = await axios.put(`${baseUrl}/${id}`, categoryToUpdate, {
+  delete: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.delete(`${CATEGORY_URL}/${id}`, {
       withCredentials: true,
     });
+    return data;
+  },
+  update: async (id, categoryToUpdate, axiosPrivate) => {
+    const { data } = await axiosPrivate.put(
+      `${CATEGORY_URL}/${id}`,
+      categoryToUpdate,
+      {
+        withCredentials: true,
+      }
+    );
     return data;
   },
 };

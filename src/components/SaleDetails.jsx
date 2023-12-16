@@ -26,28 +26,22 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 
-import { useQuery } from "react-query";
-
 // custom hooks
-import { useSaleContext } from "../hooks/useSaleContext";
-import { useSaleDetailContext } from "../hooks/useSaleDetailContext";
+import { useSaleDetails } from "../hooks/useSaleDetails";
+import { useSales } from "../hooks/useSales";
 
 const SaleDetails = () => {
   const { saleId } = useParams();
 
-  const { getSales } = useSaleContext();
+  const querySales = useSales();
 
-  const { getSaleDetails } = useSaleDetailContext();
+  const sale = querySales?.data?.filter((sale) => sale._id === saleId)[0];
 
-  const { data: sale, isLoading } = useQuery({
-    queryKey: ["sales", { id: saleId }],
-    queryFn: getSales,
-  });
+  const querySaleDetails = useSaleDetails();
 
-  const { data: saleDetails } = useQuery({
-    queryKey: ["saleDetails", { saleId }],
-    queryFn: getSaleDetails,
-  });
+  const saleDetails = querySaleDetails?.data?.filter(
+    (saleDetail) => saleDetail?.sale === saleId
+  );
 
   const saleDetailsList = saleDetails?.map((saleDetail) => {
     return (
@@ -107,7 +101,7 @@ const SaleDetails = () => {
             </CardBody>
           </Card>
         </GridItem>
-        {isLoading && (
+        {querySales?.isLoading && (
           <GridItem
             mt={1}
             colSpan={{ base: 10, lg: 8 }}
@@ -138,7 +132,7 @@ const SaleDetails = () => {
             </Card>
           </GridItem>
         )}
-        {!isLoading && (
+        {!querySales?.isLoading && (
           <GridItem
             mt={1}
             colSpan={{ base: 10, lg: 8 }}
@@ -159,7 +153,7 @@ const SaleDetails = () => {
                     >
                       <Text fontSize="lg">Cliente: </Text>
                       <Text as="b" fontSize="lg">
-                        {sale?.client.name}
+                        {sale?.client?.name}
                       </Text>
                     </Flex>
                     <Flex
@@ -207,7 +201,7 @@ const SaleDetails = () => {
           </GridItem>
         )}
 
-        {!isLoading && (
+        {!querySales?.isLoading && (
           <GridItem
             mt={3}
             colSpan={{ base: 10, lg: 8 }}

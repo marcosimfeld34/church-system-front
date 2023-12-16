@@ -19,7 +19,6 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
-// import { useNavigate } from "react-router-dom";
 
 import { DeleteIcon } from "@chakra-ui/icons";
 
@@ -29,10 +28,17 @@ import * as Yup from "yup";
 // formik
 import { useFormik } from "formik";
 
+import { useQueryClient } from "@tanstack/react-query";
+
 const SaleFormAdd = (props) => {
-  const { onSubmit, onCancelOperation, products, clients } = props;
+  const { onSubmit, onCancelOperation } = props;
+
+  const queryClient = useQueryClient();
+
+  const products = queryClient.getQueryData(["products"]);
+  const clients = queryClient.getQueryData(["clients"]);
+
   const toast = useToast();
-  // const navigate = useNavigate();
 
   const SaleSchema = Yup.object().shape({
     client: Yup.string().required("Requerido"),
@@ -58,7 +64,9 @@ const SaleFormAdd = (props) => {
     },
     validationSchema: SaleSchema,
     enableReinitialize: true,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
+      if (formik.values.isLoading) return;
+
       const productsWithoutStock = [];
 
       formik.values.saleItems?.forEach((saleItem, index) => {
@@ -86,7 +94,12 @@ const SaleFormAdd = (props) => {
         });
       } else {
         formik.setFieldValue("isLoading", true);
-        onSubmit(values);
+
+        const error = await onSubmit(values);
+
+        if (error === false) {
+          formik.setFieldValue("isLoading", error);
+        }
       }
     },
   });

@@ -1,47 +1,50 @@
-import axios from "axios";
-import { BACKEND_BASE_URL } from "./api";
-
-const baseUrl = `${BACKEND_BASE_URL}/api/v1/products`;
+const PRODUCT_URL = "/api/v1/products";
 
 const productService = {
-  getAll: async (filters) => {
+  getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
     if (filters.month && filters.year) {
-      finalUrl = `${baseUrl}?month=${filters.month}&year=${filters.year}`;
+      finalUrl = `${PRODUCT_URL}?month=${filters.month}&year=${filters.year}`;
     } else {
-      finalUrl = baseUrl;
+      finalUrl = PRODUCT_URL;
     }
 
-    const { data } = await axios.get(finalUrl, { withCredentials: true });
-    return data;
-  },
-  getOne: async (id) => {
-    const { data } = await axios.get(`${baseUrl}/${id}`, {
+    const { data } = await axiosPrivate.get(finalUrl, {
       withCredentials: true,
     });
     return data;
   },
-  store: async (newProduct) => {
-    const { data } = await axios.post(baseUrl, newProduct, {
+  getOne: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.get(`${PRODUCT_URL}/${id}`, {
       withCredentials: true,
     });
     return data;
   },
-  delete: async (id) => {
-    const { data } = await axios.delete(`${baseUrl}/${id}`, {
+  store: async (newProduct, axiosPrivate) => {
+    const { data } = await axiosPrivate.post(PRODUCT_URL, newProduct, {
       withCredentials: true,
     });
     return data;
   },
-  update: async (id, productToUpdate) => {
-    const { data } = await axios.put(`${baseUrl}/${id}`, productToUpdate, {
+  delete: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.delete(`${PRODUCT_URL}/${id}`, {
       withCredentials: true,
     });
     return data;
   },
-  updateMany: async (products) => {
-    const { data } = await axios.put(`${baseUrl}`, products, {
+  update: async (id, productToUpdate, axiosPrivate) => {
+    const { data } = await axiosPrivate.put(
+      `${PRODUCT_URL}/${id}`,
+      productToUpdate,
+      {
+        withCredentials: true,
+      }
+    );
+    return data;
+  },
+  updateMany: async (products, axiosPrivate) => {
+    const { data } = await axiosPrivate.put(`${PRODUCT_URL}`, products, {
       withCredentials: true,
     });
     return data;

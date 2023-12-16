@@ -1,47 +1,46 @@
 import ReactDOM from "react-dom/client";
+import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 import App from "./App";
 
 import { ChakraProvider } from "@chakra-ui/react";
 
-import { QueryClientProvider, QueryClient } from "react-query";
+import React from "react";
+
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { UserContextProvider } from "./context/UserContext";
-import { ProductContextProvider } from "./context/ProductContext";
-import { CategoryContextProvider } from "./context/CategoryContext";
-import { SaleContextProvider } from "./context/SaleContext";
-import { ClientContextProvider } from "./context/ClientContext";
-import { SaleDetailContextProvider } from "./context/SaleDetailContext";
-import { DebtContextProvider } from "./context/DebtContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      retry: 2,
+    },
+  },
+});
+
+if (import.meta.env.VITE_NODE_ENV === "production") {
+  disableReactDevTools();
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  // <React.StrictMode>
-  <QueryClientProvider client={queryClient}>
-    <ChakraProvider>
-      <UserContextProvider>
-        <DebtContextProvider>
-          <ClientContextProvider>
-            <CategoryContextProvider>
-              <ProductContextProvider>
-                <SaleContextProvider>
-                  <SaleDetailContextProvider>
-                    <BrowserRouter>
-                      <Routes>
-                        <Route path="/*" element={<App />} />
-                      </Routes>
-                    </BrowserRouter>
-                  </SaleDetailContextProvider>
-                </SaleContextProvider>
-              </ProductContextProvider>
-            </CategoryContextProvider>
-          </ClientContextProvider>
-        </DebtContextProvider>
-      </UserContextProvider>
-    </ChakraProvider>
-  </QueryClientProvider>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider>
+        <UserContextProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/*" element={<App />} />
+            </Routes>
+          </BrowserRouter>
+        </UserContextProvider>
+      </ChakraProvider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  </React.StrictMode>
 );

@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PersistLogin from "./components/PersistLogin";
 // import NewPasswordForm from "./components/NewPasswordForm";
 // import ForgotPasswordForm from "./components/ForgotPassword";
 
@@ -18,8 +19,10 @@ function App() {
         {/* <Route path="/forgot-password" element={<ForgotPasswordForm />} /> */}
         {/* <Route path="/recovery-password/:token" element={<NewPasswordForm />} /> */}
         {/* private routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<Home />} />
+        <Route element={<PersistLogin />}>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/*" element={<Home />} />
+          </Route>
         </Route>
       </Routes>
     </div>

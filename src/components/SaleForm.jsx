@@ -1,324 +1,339 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "react-query";
-import { useToast } from "@chakra-ui/react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 // components
 import SaleFormAdd from "./SaleFormAdd";
 import SaleFormEdit from "./SaleFormEdit";
 
-// services
-import saleService from "../services/sale";
-import productService from "../services/product";
-import saleDetailService from "../services/saleDetails";
-import debtService from "../services/debt";
-
 // custom hooks
-import { useProductContext } from "../hooks/useProductContext";
-import { useSaleContext } from "../hooks/useSaleContext";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useClientContext } from "../hooks/useClientContext";
-import { useSaleDetailContext } from "../hooks/useSaleDetailContext";
-import { useDebtContext } from "../hooks/useDebtContext";
+import { useProducts } from "../hooks/useProducts";
+import { useClients } from "../hooks/useClients";
+import { useSales } from "../hooks/useSales";
+import { useSaleDetails } from "../hooks/useSaleDetails";
+import { useDebts } from "../hooks/useDebts";
+import { useNewSale } from "../hooks/useNewSale";
+import { useAddManySaleDetails } from "../hooks/useAddManySaleDetails";
+import { useNewDebt } from "../hooks/useNewDebt";
+import { useUpdateManyProducts } from "../hooks/useUpdateManyProducts";
+import { useUpdateSale } from "../hooks/useUpdateSale";
+import { useUpdateManySaleDetails } from "../hooks/useUpdateManySaleDetails";
+import { useUpdateDebt } from "../hooks/useUpdateDebt";
+import { useMessage } from "../hooks/useMessage";
+import { useLogout } from "../hooks/useLogout";
 
 const SaleForm = () => {
-  const { user, logout } = useAuthContext();
-
-  const { getProducts } = useProductContext();
-
-  const { getClients } = useClientContext();
-
-  const { getSales } = useSaleContext();
-
-  const { getSaleDetails } = useSaleDetailContext();
-
-  const { getDebts } = useDebtContext();
-
-  const toast = useToast();
+  const { showMessage } = useMessage();
 
   const navigate = useNavigate();
 
   const { saleId } = useParams();
 
-  const { data: products } = useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
-  });
+  // sales
+  const { addNewSale } = useNewSale();
+  const { updateSale } = useUpdateSale();
 
-  const { data: clients } = useQuery({
-    queryKey: ["clients"],
-    queryFn: getClients,
-  });
+  // salesDetails
+  const { addManySaleDetails } = useAddManySaleDetails();
+  const { updateManySaleDetails } = useUpdateManySaleDetails();
 
-  const { data: sales } = useQuery({
-    queryKey: ["sales"],
-    queryFn: getSales,
-  });
+  // debts
+  const { addNewDebt } = useNewDebt();
+  const { updateDebt } = useUpdateDebt();
 
-  const { data: saleDetails } = useQuery({
-    queryKey: ["saleDetails"],
-    queryFn: getSaleDetails,
-  });
+  // products
+  const { updateManyProducts } = useUpdateManyProducts();
 
-  const { data: debts } = useQuery({
-    queryKey: ["debts"],
-    queryFn: getDebts,
-  });
+  const queryProducts = useProducts();
+  const queryClients = useClients();
+  const querySales = useSales();
+  const querySaleDetails = useSaleDetails();
+  const queryDebts = useDebts();
+
+  const { logout } = useLogout();
+  const location = useLocation();
 
   const onSubmit = async ({ client, isPaid, saleItems }) => {
-    if (user !== null) {
-      let newSale = {
-        client,
-        isPaid,
-      };
+    let newSale = {
+      client,
+      isPaid,
+    };
 
-      if (!saleId) {
-        try {
-          let productWithSalePrice = [];
-          let productIds = saleItems?.map((saleItem) => saleItem.product);
-          let productsToUpdate = [];
-          products.forEach((p) => {
-            if (productIds.includes(p._id)) {
-              productsToUpdate.push({ id: p._id, stock: p.stock });
-              productWithSalePrice.push({ id: p._id, salePrice: p.salePrice });
-            }
-          });
-
-          productsToUpdate?.map((productToupdate) => {
-            saleItems.forEach((saleItem) => {
-              if (saleItem.product === productToupdate.id) {
-                productToupdate.stock =
-                  productToupdate.stock - saleItem.quantity;
-              }
-            });
-          });
-
-          saleItems.map((saleItem) => {
-            productWithSalePrice.forEach((product) => {
-              if (product.id === saleItem.product) {
-                saleItem.subtotal = saleItem.quantity * product.salePrice;
-              }
-            });
-          });
-
-          newSale.total = Number.parseFloat(
-            saleItems
-              ?.map((saleItem) => saleItem.subtotal)
-              .reduce((acc, currentValue) => acc + currentValue, 0)
-              .toFixed(2)
-          );
-
-          const { data } = await saleService.store(newSale);
-
-          let saleItemWithSale = undefined;
-
-          if (data) {
-            if (!isPaid) {
-              let newDebt = {
-                client,
-                sale: data._id,
-                initialAmount: newSale.total,
-                deliveredAmount: 0,
-                isPaid: false,
-              };
-
-              await debtService.store(newDebt);
-            }
-
-            saleItemWithSale = saleItems.map((saleItem) => {
-              return { ...saleItem, sale: data._id };
-            });
-
-            await saleDetailService.storeMany({
-              saleDetails: saleItemWithSale,
-            });
+    if (!saleId) {
+      try {
+        let productWithSalePrice = [];
+        let productIds = saleItems?.map((saleItem) => saleItem.product);
+        let productsToUpdate = [];
+        queryProducts?.data.forEach((p) => {
+          if (productIds.includes(p._id)) {
+            productsToUpdate.push({ id: p._id, stock: p.stock });
+            productWithSalePrice.push({ id: p._id, salePrice: p.salePrice });
           }
+        });
 
-          await productService.updateMany({
-            products: productsToUpdate,
-          });
-
-          toast({
-            position: "top",
-            title: "Venta creada.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            colorScheme: "purple",
-          });
-
-          navigate("/");
-        } catch (error) {
-          if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "INVALID_TOKEN"
-          ) {
-            logout();
-          }
-          if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "MISSING_FIELDS_REQUIRED"
-          ) {
-            console.log(error.response.data.message);
-          }
-        }
-      } else {
-        try {
-          let productWithSalePrice = [];
-          let oldSaleItems = [];
-          saleDetails?.forEach((saleDetail) => {
-            if (saleDetail.sale === saleId) {
-              oldSaleItems.push({
-                product: saleDetail.product._id,
-                quantity: saleDetail.quantity,
-                id: saleDetail._id,
-              });
+        productsToUpdate?.map((productToupdate) => {
+          saleItems.forEach((saleItem) => {
+            if (saleItem.product === productToupdate.id) {
+              productToupdate.stock = productToupdate.stock - saleItem.quantity;
             }
           });
+        });
 
-          let oldProductIds = oldSaleItems?.map(
-            (oldSaleItem) => oldSaleItem.product
-          );
-
-          let oldProductsToUpdate = [];
-          products.forEach((p) => {
-            if (oldProductIds.includes(p._id)) {
-              oldProductsToUpdate.push({ id: p._id, stock: p.stock });
+        saleItems.map((saleItem) => {
+          productWithSalePrice.forEach((product) => {
+            if (product.id === saleItem.product) {
+              saleItem.subtotal = saleItem.quantity * product.salePrice;
             }
           });
+        });
 
-          oldProductsToUpdate?.map((productToupdate) => {
-            oldSaleItems.forEach((oldSaleItem) => {
-              if (oldSaleItem.product === productToupdate.id) {
-                productToupdate.stock =
-                  productToupdate.stock + oldSaleItem.quantity;
-              }
-            });
-          });
+        newSale.total = Number.parseFloat(
+          saleItems
+            ?.map((saleItem) => saleItem.subtotal)
+            .reduce((acc, currentValue) => acc + currentValue, 0)
+            .toFixed(2)
+        );
 
-          await productService.updateMany({
-            products: oldProductsToUpdate,
-          });
+        const { data, isStored, status } = await addNewSale(newSale);
 
-          let productIds = saleItems?.map((saleItem) => saleItem.product);
-          let productsToUpdate = [];
-          products.forEach((p) => {
-            if (productIds.includes(p._id)) {
-              productsToUpdate.push({ id: p._id, stock: p.stock });
-              productWithSalePrice.push({ id: p._id, salePrice: p.salePrice });
-            }
-          });
+        let saleItemWithSale = undefined;
 
-          productsToUpdate?.map((productToupdate) => {
-            oldSaleItems.forEach((oldSaleItem) => {
-              if (oldSaleItem.product === productToupdate.id) {
-                productToupdate.stock =
-                  productToupdate.stock + oldSaleItem.quantity;
-              }
-            });
-          });
-
-          productsToUpdate?.map((productToupdate) => {
-            saleItems.forEach((saleItem) => {
-              if (saleItem.product === productToupdate.id) {
-                productToupdate.stock =
-                  productToupdate.stock - saleItem.quantity;
-              }
-            });
-          });
-
-          saleItems.map((saleItem) => {
-            productWithSalePrice.forEach((product) => {
-              if (product.id === saleItem.product) {
-                saleItem.subtotal = saleItem.quantity * product.salePrice;
-              }
-            });
-          });
-
-          newSale.total = Number.parseFloat(
-            saleItems
-              ?.map((saleItem) => saleItem.subtotal)
-              .reduce((acc, currentValue) => acc + currentValue, 0)
-              .toFixed(2)
-          );
-
-          const { data } = await saleService.update(saleId, newSale);
-
-          let saleItemWithSale = [];
-
-          let newSaleItems = [];
-
-          if (data) {
-            saleItems.forEach((saleItem) => {
-              if (saleItem.hasOwnProperty("id")) {
-                saleItemWithSale.push({ ...saleItem, sale: data._id });
-              }
-            });
-
-            saleItems.forEach((saleItem) => {
-              if (!saleItem.hasOwnProperty("id")) {
-                newSaleItems.push({ ...saleItem, sale: data._id });
-              }
-            });
-
-            let debtToUpdate = {
-              ...debts?.filter((debt) => debt.sale._id === data._id)[0],
+        if (isStored && status === 201 && data) {
+          if (!isPaid) {
+            let newDebt = {
+              client,
+              sale: data._id,
+              initialAmount: newSale.total,
+              deliveredAmount: 0,
+              isPaid: false,
             };
 
-            if (!isPaid && JSON.stringify(debtToUpdate) !== "{}") {
-              debtToUpdate.initialAmount = newSale.total;
-              debtToUpdate.deliveredAmount = 0;
-              debtToUpdate.isPaid = false;
-              await debtService.update(debtToUpdate._id, debtToUpdate);
-            } else if (!isPaid) {
-              let newDebt = {
-                client,
-                sale: data._id,
-                initialAmount: newSale.total,
-                deliveredAmount: 0,
-                isPaid: false,
-              };
+            await addNewDebt(newDebt);
+          }
 
-              await debtService.store(newDebt);
-            } else if (isPaid && JSON.stringify(debtToUpdate) !== "{}") {
-              debtToUpdate.initialAmount = newSale.total;
-              debtToUpdate.deliveredAmount = newSale.total;
-              debtToUpdate.isPaid = true;
-              await debtService.update(debtToUpdate._id, debtToUpdate);
-            }
+          saleItemWithSale = saleItems.map((saleItem) => {
+            return { ...saleItem, sale: data._id };
+          });
 
-            await saleDetailService.updateMany({
-              saleDetails: saleItemWithSale,
+          const { isStored, status } = await addManySaleDetails({
+            saleDetails: saleItemWithSale,
+          });
+
+          if (isStored && status === 201) {
+            const { isUpdated, status } = await updateManyProducts({
+              products: productsToUpdate,
             });
 
-            await saleDetailService.storeMany({ saleDetails: newSaleItems });
+            if (isUpdated && status === 200) {
+              showMessage("Venta creada.", "success", "purple");
+
+              navigate("/");
+            }
           }
-
-          await productService.updateMany({
-            products: productsToUpdate,
+        }
+      } catch (error) {
+        if (error?.response?.status === 403) {
+          logout().then((res) => {
+            if (res.loggedOut) {
+              showMessage("Venció la sesión", "success", "purple");
+              navigate("/login", { state: { from: location }, replace: true });
+            }
           });
-
-          toast({
-            position: "top",
-            title: "Venta actualizada.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            colorScheme: "purple",
-          });
-
+        } else if (
+          error?.response?.data?.status === 400 &&
+          error?.response?.data?.message === "MISSING_FIELDS_REQUIRED"
+        ) {
+          showMessage(
+            "¡Hubo un error!",
+            "error",
+            "red",
+            "Hay campos incompletos."
+          );
+          return false;
+        } else {
+          showMessage(
+            "¡Hubo un error!",
+            "error",
+            "red",
+            "No se pudo guardar la venta."
+          );
           navigate("/");
-        } catch (error) {
-          if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "INVALID_TOKEN"
-          ) {
-            logout();
-          } else if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "MISSING_FIELDS_REQUIRED"
-          ) {
-            console.log(error.response.data.message);
+        }
+      }
+    } else {
+      try {
+        let productWithSalePrice = [];
+        let oldSaleItems = [];
+        querySaleDetails?.data?.forEach((saleDetail) => {
+          if (saleDetail.sale === saleId) {
+            oldSaleItems.push({
+              product: saleDetail.product._id,
+              quantity: saleDetail.quantity,
+              id: saleDetail._id,
+            });
           }
+        });
+
+        let oldProductIds = oldSaleItems?.map(
+          (oldSaleItem) => oldSaleItem.product
+        );
+
+        let oldProductsToUpdate = [];
+        queryProducts?.data.forEach((p) => {
+          if (oldProductIds.includes(p._id)) {
+            oldProductsToUpdate.push({ id: p._id, stock: p.stock });
+          }
+        });
+
+        oldProductsToUpdate?.map((productToupdate) => {
+          oldSaleItems.forEach((oldSaleItem) => {
+            if (oldSaleItem.product === productToupdate.id) {
+              productToupdate.stock =
+                productToupdate.stock + oldSaleItem.quantity;
+            }
+          });
+        });
+
+        await updateManyProducts({
+          products: oldProductsToUpdate,
+        });
+
+        let productIds = saleItems?.map((saleItem) => saleItem.product);
+        let productsToUpdate = [];
+        queryProducts?.data.forEach((p) => {
+          if (productIds.includes(p._id)) {
+            productsToUpdate.push({ id: p._id, stock: p.stock });
+            productWithSalePrice.push({ id: p._id, salePrice: p.salePrice });
+          }
+        });
+
+        productsToUpdate?.map((productToupdate) => {
+          oldSaleItems.forEach((oldSaleItem) => {
+            if (oldSaleItem.product === productToupdate.id) {
+              productToupdate.stock =
+                productToupdate.stock + oldSaleItem.quantity;
+            }
+          });
+        });
+
+        productsToUpdate?.map((productToupdate) => {
+          saleItems.forEach((saleItem) => {
+            if (saleItem.product === productToupdate.id) {
+              productToupdate.stock = productToupdate.stock - saleItem.quantity;
+            }
+          });
+        });
+
+        saleItems.map((saleItem) => {
+          productWithSalePrice.forEach((product) => {
+            if (product.id === saleItem.product) {
+              saleItem.subtotal = saleItem.quantity * product.salePrice;
+            }
+          });
+        });
+
+        newSale.total = Number.parseFloat(
+          saleItems
+            ?.map((saleItem) => saleItem.subtotal)
+            .reduce((acc, currentValue) => acc + currentValue, 0)
+            .toFixed(2)
+        );
+
+        const { data, status, isUpdated } = await updateSale({
+          saleId,
+          saleToUpdate: newSale,
+        });
+
+        let saleItemWithSale = [];
+
+        let newSaleItems = [];
+
+        if (isUpdated && status === 200 && data) {
+          saleItems.forEach((saleItem) => {
+            if (saleItem.hasOwnProperty("id")) {
+              saleItemWithSale.push({ ...saleItem, sale: data._id });
+            }
+          });
+
+          saleItems.forEach((saleItem) => {
+            if (!saleItem.hasOwnProperty("id")) {
+              newSaleItems.push({ ...saleItem, sale: data._id });
+            }
+          });
+
+          let debtToUpdate = {
+            ...queryDebts?.data?.filter(
+              (debt) => debt.sale._id === data._id
+            )[0],
+          };
+
+          if (!isPaid && JSON.stringify(debtToUpdate) !== "{}") {
+            debtToUpdate.initialAmount = newSale.total;
+            debtToUpdate.deliveredAmount = 0;
+            debtToUpdate.isPaid = false;
+            await updateDebt({ debtId: debtToUpdate._id, debtToUpdate });
+          } else if (!isPaid) {
+            let newDebt = {
+              client,
+              sale: data._id,
+              initialAmount: newSale.total,
+              deliveredAmount: 0,
+              isPaid: false,
+            };
+
+            await addNewDebt(newDebt);
+          } else if (isPaid && JSON.stringify(debtToUpdate) !== "{}") {
+            debtToUpdate.initialAmount = newSale.total;
+            debtToUpdate.deliveredAmount = newSale.total;
+            debtToUpdate.isPaid = true;
+            await updateDebt({ debtId: debtToUpdate._id, debtToUpdate });
+          }
+
+          const { isUpdated } = await updateManySaleDetails({
+            saleDetails: saleItemWithSale,
+          });
+
+          if (isUpdated) {
+            const { isStored } = await addManySaleDetails({
+              saleDetails: newSaleItems,
+            });
+
+            if (isStored) {
+              await updateManyProducts({
+                products: productsToUpdate,
+              });
+
+              showMessage("Venta actualizada.", "success", "purple");
+
+              navigate("/");
+            }
+          }
+        }
+      } catch (error) {
+        if (error?.response?.status === 403) {
+          logout().then((res) => {
+            if (res.loggedOut) {
+              showMessage("Venció la sesión", "success", "purple");
+              navigate("/login", { state: { from: location }, replace: true });
+            }
+          });
+        } else if (
+          error?.response?.data?.status === 400 &&
+          error?.response?.data?.message === "MISSING_FIELDS_REQUIRED"
+        ) {
+          showMessage(
+            "¡Hubo un error!",
+            "error",
+            "red",
+            "Hay campos incompletos."
+          );
+          return false;
+        } else {
+          showMessage(
+            "¡Hubo un error!",
+            "error",
+            "red",
+            "No se pudo guardar la venta."
+          );
+          navigate("/");
         }
       }
     }
@@ -334,17 +349,13 @@ const SaleForm = () => {
         <SaleFormEdit
           onSubmit={onSubmit}
           onCancelOperation={onCancelOperation}
-          saleToUpdate={{ ...sales?.find((s) => s._id === saleId) }}
-          products={products}
-          clients={clients}
+          saleToUpdate={{ ...querySales?.data?.find((s) => s._id === saleId) }}
         />
       )}
       {!saleId && (
         <SaleFormAdd
           onSubmit={onSubmit}
           onCancelOperation={onCancelOperation}
-          products={products?.filter((product) => product.stock > 0)}
-          clients={clients}
         />
       )}
     </>

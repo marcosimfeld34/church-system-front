@@ -1,55 +1,62 @@
-import axios from "axios";
-import { BACKEND_BASE_URL } from "./api";
-
-const baseUrl = `${BACKEND_BASE_URL}/api/v1/saleDetails`;
+const SALEDETAIL_URL = "/api/v1/saleDetails";
 
 const saleDetailService = {
-  getAll: async (filters) => {
+  getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
     if (filters.month && filters.year) {
-      finalUrl = `${baseUrl}?month=${filters.month}&year=${filters.year}`;
+      finalUrl = `${SALEDETAIL_URL}?month=${filters.month}&year=${filters.year}`;
     } else {
-      finalUrl = baseUrl;
+      finalUrl = SALEDETAIL_URL;
     }
 
-    const { data } = await axios.get(finalUrl, { withCredentials: true });
-    return data;
-  },
-  getOne: async (id) => {
-    const { data } = await axios.get(`${baseUrl}/${id}`, {
+    const { data } = await axiosPrivate.get(finalUrl, {
       withCredentials: true,
     });
     return data;
   },
-  store: async (newSaleDetails) => {
-    const { data } = await axios.post(baseUrl, newSaleDetails, {
+  getOne: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.get(`${SALEDETAIL_URL}/${id}`, {
       withCredentials: true,
     });
     return data;
   },
-  storeMany: async (newSaleDetails) => {
-    const { data } = await axios.post(baseUrl, newSaleDetails, {
+  store: async (newSaleDetails, axiosPrivate) => {
+    const { data } = await axiosPrivate.post(SALEDETAIL_URL, newSaleDetails, {
       withCredentials: true,
     });
     return data;
   },
-  delete: async (id) => {
-    const { data } = await axios.delete(`${baseUrl}/${id}`, {
+  storeMany: async (newSaleDetails, axiosPrivate) => {
+    const { data } = await axiosPrivate.post(SALEDETAIL_URL, newSaleDetails, {
       withCredentials: true,
     });
     return data;
   },
-  deleteMany: async (saleDetailIds) => {
-    const { data } = await axios.put(`${baseUrl}/deleteMany`, saleDetailIds, {
+  delete: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.delete(`${SALEDETAIL_URL}/${id}`, {
       withCredentials: true,
     });
     return data;
   },
-  updateMany: async (saleDetailsToUpdate) => {
-    const { data } = await axios.put(`${baseUrl}`, saleDetailsToUpdate, {
-      withCredentials: true,
-    });
+  deleteMany: async (saleDetailIds, axiosPrivate) => {
+    const { data } = await axiosPrivate.put(
+      `${SALEDETAIL_URL}/deleteMany`,
+      saleDetailIds,
+      {
+        withCredentials: true,
+      }
+    );
+    return data;
+  },
+  updateMany: async (saleDetailsToUpdate, axiosPrivate) => {
+    const { data } = await axiosPrivate.put(
+      `${SALEDETAIL_URL}`,
+      saleDetailsToUpdate,
+      {
+        withCredentials: true,
+      }
+    );
     return data;
   },
 };

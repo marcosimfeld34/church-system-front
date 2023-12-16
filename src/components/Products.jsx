@@ -1,7 +1,6 @@
-import { useQuery } from "react-query";
-
 import {
   Grid,
+  GridItem,
   Button,
   Card,
   CardBody,
@@ -17,36 +16,48 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 // components
 import Product from "./Product";
 
 // custom hooks
-import { useProductContext } from "../hooks/useProductContext";
-import { useAuthContext } from "../hooks/useAuthContext";
+import { useProducts } from "../hooks/useProducts";
+import { useLogout } from "../hooks/useLogout";
+import { useMessage } from "../hooks/useMessage";
 
 const Products = () => {
-  const { getProducts } = useProductContext();
-
   const [searchValue, setSearchValue] = useState("");
 
-  const { user } = useAuthContext();
+  const { logout } = useLogout();
 
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
-  });
+  const { showMessage } = useMessage();
 
   const navigate = useNavigate();
 
-  const totalProductSales = products
+  const location = useLocation();
+
+  const queryProducts = useProducts();
+
+  if (
+    queryProducts?.isError &&
+    queryProducts?.error?.response?.status === 403
+  ) {
+    logout().then((res) => {
+      if (res.loggedOut) {
+        showMessage("Venció la sesión", "success", "purple");
+        navigate("/login", { state: { from: location }, replace: true });
+      }
+    });
+  }
+
+  const totalProductSales = queryProducts?.data
     ?.map((product) => product.salePrice * product.stock)
     .reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
 
-  const totalProductCost = products
+  const totalProductCost = queryProducts?.data
     ?.map((product) => product.costPrice * product.stock)
     .reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
@@ -59,18 +70,22 @@ const Products = () => {
     setSearchValue(e.target.value);
   };
 
+  const products = queryProducts?.data;
+
   const productList = products
     ?.filter((product) =>
       product.name.toLowerCase().includes(searchValue.toLowerCase())
     )
     ?.map((product) => {
-      return <Product key={product._id} product={product} />;
+      return (
+        <Product key={product?._id + product?.createdAt} product={product} />
+      );
     });
 
   return (
     <>
-      {isLoading && (
-        <Card variant="outline" mt={5}>
+      {queryProducts?.isLoading && (
+        <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Stack>
               <Skeleton height="20px" />
@@ -80,7 +95,7 @@ const Products = () => {
           </CardBody>
         </Card>
       )}
-      {!isLoading && (
+      {!queryProducts?.isLoading && (
         <Grid
           templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
           gap={2}
@@ -128,45 +143,62 @@ const Products = () => {
           </Card>
         </Grid>
       )}
-      <Card variant="filled" mt={5} mb={3}>
-        <CardBody>
-          <Flex>
-            <Spacer />
-            <Button
-              onClick={() => handleAddProduct()}
-              colorScheme="purple"
-              variant="solid"
-            >
-              <AddIcon boxSize={3} me={2} />
-              Agregar producto
-            </Button>
-          </Flex>
-        </CardBody>
-      </Card>
-      <Card variant="outline" mt={5} mb={3}>
-        <CardBody>
-          <Flex>
-            <FormControl>
-              <Input
-                name="searchValue"
-                type="text"
-                value={searchValue}
-                onChange={(e) => handleSetSearchValue(e)}
-                placeholder="Buscar producto ..."
-                required
-              />
-            </FormControl>
-          </Flex>
-        </CardBody>
-      </Card>
-
-      {isLoading && (
+      {!queryProducts?.isLoading && (
         <>
-          <Card
-            variant="outline"
-            mb={3}
-            mt={user.profile !== "System Administrator" ? 5 : 0}
-          >
+          <Card bgColor={"#373E68"} variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Flex placeItems={"center"}>
+                <Text color={"white"} fontWeight={"bold"}>
+                  {productList?.length} productos
+                </Text>
+                <Spacer />
+                <Button
+                  onClick={() => handleAddProduct()}
+                  colorScheme="purple"
+                  variant="solid"
+                >
+                  <AddIcon boxSize={3} me={2} />
+                  Agregar producto
+                </Button>
+              </Flex>
+            </CardBody>
+          </Card>
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Flex>
+                <FormControl>
+                  <Input
+                    name="searchValue"
+                    type="text"
+                    value={searchValue}
+                    onChange={(e) => handleSetSearchValue(e)}
+                    placeholder="Buscar producto ..."
+                    required
+                  />
+                </FormControl>
+              </Flex>
+            </CardBody>
+          </Card>
+        </>
+      )}
+
+      {queryProducts?.isLoading && (
+        <>
+          <Card variant="filled" mb={3}>
+            <CardBody>
+              <Flex>
+                <Spacer />
+                <Skeleton
+                  width={"170px"}
+                  startColor="purple.500"
+                  endColor="purple.300"
+                  height="40px"
+                  borderRadius={"5px"}
+                />
+              </Flex>
+            </CardBody>
+          </Card>
+          <Card variant="outline" mb={3} mt={5}>
             <CardBody>
               <Stack>
                 <Skeleton height="10px" />
@@ -214,12 +246,12 @@ const Products = () => {
         </>
       )}
 
-      {products?.length > 0 && !isLoading && (
-        <Grid mt={user.profile !== "System Administrator" ? 5 : 0}>
-          {productList}
+      {queryProducts?.data?.length > 0 && !queryProducts?.isLoading && (
+        <Grid mt={5}>
+          <GridItem>{productList}</GridItem>
         </Grid>
       )}
-      {products?.length === 0 && !isLoading && (
+      {queryProducts?.data?.length === 0 && !queryProducts?.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Alert colorScheme="purple" status="success">

@@ -1,106 +1,79 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 // components
 import ClientFormAdd from "./ClientFormAdd";
 import ClientFormEdit from "./ClientFormEdit";
 
-import { useToast } from "@chakra-ui/react";
-
-// services
-import clientService from "../services/client";
-
 // custom hooks
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useClientContext } from "../hooks/useClientContext";
+import { useClients } from "../hooks/useClients";
+import { useNewClient } from "../hooks/useNewClient";
+import { useEditClient } from "../hooks/useEditClient";
+import { useLogout } from "../hooks/useLogout";
+import { useMessage } from "../hooks/useMessage";
 
 const ClientForm = () => {
-  const { user, logout } = useAuthContext();
-
-  const toast = useToast();
-
-  const { getClients } = useClientContext();
+  const { showMessage } = useMessage();
 
   const { clientId } = useParams();
 
   const navigate = useNavigate();
+  const { logout } = useLogout();
+  const location = useLocation();
 
-  const { data: clients } = useQuery({
-    queryKey: ["clients"],
-    queryFn: getClients,
-  });
+  const queryClients = useClients();
+  const { addNewClient } = useNewClient();
+  const { editClient } = useEditClient();
 
   const onSubmit = async ({ name, amountToPay }) => {
-    if (user !== null) {
-      let newClient = {
-        name,
-        amountToPay,
+    let newClient = {
+      name,
+      amountToPay,
+    };
+
+    if (!clientId) {
+      try {
+        await addNewClient(newClient);
+
+        showMessage("Cliente creado.", "success", "purple");
+
+        navigate("/clients");
+      } catch (error) {
+        if (error?.response?.status === 403) {
+          logout().then((res) => {
+            if (res.loggedOut) {
+              showMessage("Venció la sesión", "success", "purple");
+              navigate("/login", { state: { from: location }, replace: true });
+            }
+          });
+        }
+        if (error?.response?.status === 400) {
+          showMessage("Ocurrió un error", "success", "purple");
+        }
+      }
+    } else {
+      let clientUpdated = {
+        ...queryClients?.data?.find((c) => c._id === clientId),
       };
 
-      if (!clientId) {
-        try {
-          await clientService.store(newClient);
+      clientUpdated.name = name;
+      clientUpdated.amountToPay = amountToPay;
 
-          toast({
-            position: "top",
-            title: "Cliente creado.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            colorScheme: "purple",
+      try {
+        await editClient({ clientId, clientToUpdate: clientUpdated });
+
+        showMessage("Cliente actualizado.", "success", "purple");
+
+        navigate("/clients");
+      } catch (error) {
+        if (error?.response?.status === 403) {
+          logout().then((res) => {
+            if (res.loggedOut) {
+              showMessage("Venció la sesión", "success", "purple");
+              navigate("/login", { state: { from: location }, replace: true });
+            }
           });
-
-          navigate("/clients");
-        } catch (error) {
-          if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "INVALID_TOKEN"
-          ) {
-            logout();
-          }
-          if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "MISSING_FIELDS_REQUIRED"
-          ) {
-            console.log(error.response.data.message);
-          }
-        }
-      } else {
-        let clientUpdated = {
-          ...clients?.find((c) => c._id === clientId),
-        };
-
-        clientUpdated.name = name;
-        clientUpdated.amountToPay = amountToPay;
-
-        try {
-          await clientService.update(clientId, clientUpdated);
-
-          toast({
-            position: "top",
-            title: "Cliente actualizado.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            colorScheme: "purple",
-          });
-
-          navigate("/clients");
-        } catch (error) {
-          if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "INVALID_TOKEN"
-          ) {
-            logout();
-          } else if (
-            error.response.data.status === 400 &&
-            error.response.data.message === "MISSING_FIELDS_REQUIRED"
-          ) {
-            console.log(error.response.data.message);
-            // handleSetMessage(MISSING_FIELDS_REQUIRED);
-            // handleSetType("danger");
-            // handleSetRecordType("budget");
-          }
+        } else if (error?.response?.status === 400) {
+          showMessage("Ocurrió un error", "success", "purple");
         }
       }
     }
@@ -117,7 +90,7 @@ const ClientForm = () => {
           onSubmit={onSubmit}
           onCancelOperation={onCancelOperation}
           clientToUpdate={{
-            ...clients?.find((c) => c._id === clientId),
+            ...queryClients?.data?.find((c) => c._id === clientId),
           }}
         />
       )}

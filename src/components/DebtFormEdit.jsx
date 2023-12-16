@@ -84,7 +84,7 @@ const DebtFormEdit = (props) => {
                           (client) => client.value === values.client
                         )}
                         name="client"
-                        isDisabled={true}
+                        // isDisabled={true}
                         placeholder="Buscar cliente ..."
                         isInvalid={errors.client && touched.client}
                         required

@@ -23,30 +23,28 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import Select from "react-select";
 import * as Yup from "yup";
 
-import { useQuery } from "react-query";
-
 // formik
 import { useFormik } from "formik";
 
 // hooks
-import { useSaleDetailContext } from "../hooks/useSaleDetailContext";
+import { useQueryClient } from "@tanstack/react-query";
 
-// services
-import saleDetailService from "../services/saleDetails";
-import productService from "../services/product";
+import { useUpdateManyProducts } from "../hooks/useUpdateManyProducts";
+import { useDeleteManySaleDetails } from "../hooks/useDeleteManySaleDetails";
 
 const SaleFormEdit = (props) => {
-  const { onSubmit, onCancelOperation, products, clients, saleToUpdate } =
-    props;
+  const { onSubmit, onCancelOperation, saleToUpdate } = props;
 
   const toast = useToast();
 
-  const { getSaleDetails } = useSaleDetailContext();
+  const queryClient = useQueryClient();
 
-  const { data: saleDetails } = useQuery({
-    queryKey: ["saleDetails"],
-    queryFn: getSaleDetails,
-  });
+  const { updateManyProducts } = useUpdateManyProducts();
+  const { deleteManySaleDetails } = useDeleteManySaleDetails();
+
+  const products = queryClient.getQueryData(["products"]);
+  const clients = queryClient.getQueryData(["clients"]);
+  const saleDetails = queryClient.getQueryData(["saleDetails"]);
 
   const SaleSchema = Yup.object().shape({
     client: Yup.string().required("Requerido"),
@@ -86,7 +84,8 @@ const SaleFormEdit = (props) => {
     },
     validationSchema: SaleSchema,
     enableReinitialize: true,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
+      if (formik.values.isLoading) return;
       const productsWithoutStock = [];
 
       formik.values.saleItems?.forEach((saleItem, index) => {
@@ -122,7 +121,12 @@ const SaleFormEdit = (props) => {
         });
       } else {
         formik.setFieldValue("isLoading", true);
-        onSubmit(values);
+
+        const error = await onSubmit(values);
+
+        if (error === false) {
+          formik.setFieldValue("isLoading", error);
+        }
       }
     },
   });
@@ -212,9 +216,9 @@ const SaleFormEdit = (props) => {
 
     products = uniqByKeepLast(products, (it) => it.id);
 
-    await productService.updateMany({ products });
+    await updateManyProducts({ products });
 
-    await saleDetailService.deleteMany({
+    await deleteManySaleDetails({
       saleDetails: saleItemsToDelete.map(
         (saleItemToDelete) => saleItemToDelete.id
       ),

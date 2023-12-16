@@ -26,26 +26,36 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-import { useClientContext } from "../hooks/useClientContext";
-import { useAuthContext } from "../hooks/useAuthContext";
+import { useDeleteClient } from "../hooks/useDeleteClient";
+import { useMessage } from "../hooks/useMessage";
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 
 const Client = ({ client }) => {
-  const { user } = useAuthContext();
   const navigate = useNavigate();
 
-  const { handleDeleteClient } = useClientContext();
+  const { deleteClient } = useDeleteClient();
+  const { showMessage } = useMessage();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEdit = () => {
     navigate(`${client._id}/edit`);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setIsLoading(true);
-    handleDeleteClient(client);
+    const response = await deleteClient({ clientId: client._id });
+    if (response?.isDeleted) {
+      showMessage("Cliente eliminado.", "success", "purple");
+      setIsLoading(false);
+    }
+
+    if (!response?.isDeleted) {
+      showMessage("Ocurrió un error", "error", "red");
+      setIsLoading(false);
+    }
     navigate("/clients");
   };
 
@@ -66,61 +76,59 @@ const Client = ({ client }) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                {user.profile === "System Administrator" && (
-                  <Popover placement="bottom-start">
-                    <PopoverTrigger>
-                      <IconButton
-                        alignSelf="end"
-                        variant={"link"}
-                        colorScheme="blackAlpha"
-                        size="md"
-                        icon={
-                          <>
-                            <AddIcon boxSize="3" />
-                            <ChevronDownIcon boxSize="4" />
-                          </>
-                        }
-                      />
-                    </PopoverTrigger>
-                    <Portal>
-                      <PopoverContent width="3xs">
-                        <PopoverArrow />
-                        <PopoverBody p={0}>
-                          <VStack spacing={1} align="stretch">
-                            <Button
-                              onClick={() => handleEdit()}
-                              variant={"blue"}
-                              colorScheme="blue"
-                              justifyContent={"start"}
-                              size="md"
-                              _hover={{
-                                textDecoration: "none",
-                                color: "purple",
-                                bg: "purple.100",
-                              }}
-                            >
-                              Editar
-                            </Button>
-                            <Button
-                              onClick={onOpen}
-                              variant={"blue"}
-                              colorScheme="blue"
-                              justifyContent={"start"}
-                              size="md"
-                              _hover={{
-                                textDecoration: "none",
-                                color: "purple",
-                                bg: "purple.100",
-                              }}
-                            >
-                              Borrar
-                            </Button>
-                          </VStack>
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Portal>
-                  </Popover>
-                )}
+                <Popover placement="bottom-start">
+                  <PopoverTrigger>
+                    <IconButton
+                      alignSelf="end"
+                      variant={"link"}
+                      colorScheme="blackAlpha"
+                      size="md"
+                      icon={
+                        <>
+                          <AddIcon boxSize="3" />
+                          <ChevronDownIcon boxSize="4" />
+                        </>
+                      }
+                    />
+                  </PopoverTrigger>
+                  <Portal>
+                    <PopoverContent width="3xs">
+                      <PopoverArrow />
+                      <PopoverBody p={0}>
+                        <VStack spacing={1} align="stretch">
+                          <Button
+                            onClick={() => handleEdit()}
+                            variant={"blue"}
+                            colorScheme="blue"
+                            justifyContent={"start"}
+                            size="md"
+                            _hover={{
+                              textDecoration: "none",
+                              color: "purple",
+                              bg: "purple.100",
+                            }}
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            onClick={onOpen}
+                            variant={"blue"}
+                            colorScheme="blue"
+                            justifyContent={"start"}
+                            size="md"
+                            _hover={{
+                              textDecoration: "none",
+                              color: "purple",
+                              bg: "purple.100",
+                            }}
+                          >
+                            Borrar
+                          </Button>
+                        </VStack>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Portal>
+                </Popover>
               </Flex>
             </GridItem>
           </Grid>

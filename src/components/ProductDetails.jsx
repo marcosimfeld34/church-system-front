@@ -17,20 +17,17 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 
-import { useQuery } from "react-query";
-
 // custom hooks
-import { useProductContext } from "../hooks/useProductContext";
+import { useProducts } from "../hooks/useProducts";
 
 const ProductDetails = () => {
   const { productId } = useParams();
 
-  const { getProducts } = useProductContext();
+  const queryProducts = useProducts();
 
-  const { data: product, isLoading } = useQuery({
-    queryKey: ["products", { id: productId }],
-    queryFn: getProducts,
-  });
+  const product = queryProducts?.data?.filter(
+    (product) => product._id === productId
+  )[0];
 
   const navigate = useNavigate();
 
@@ -74,7 +71,7 @@ const ProductDetails = () => {
             </CardBody>
           </Card>
         </GridItem>
-        {isLoading && (
+        {queryProducts?.isLoading && (
           <GridItem
             m={1}
             colSpan={{ base: 10, lg: 8 }}
@@ -105,7 +102,7 @@ const ProductDetails = () => {
             </Card>
           </GridItem>
         )}
-        {!isLoading && (
+        {!queryProducts?.isLoading && (
           <GridItem
             m={1}
             colSpan={{ base: 10, lg: 8 }}

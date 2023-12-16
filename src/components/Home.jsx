@@ -37,12 +37,7 @@ import PageNotFound from "./PageNotFound";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-// custom hooks
-import { useAuthContext } from "../hooks/useAuthContext";
-
 const Home = () => {
-  const { user } = useAuthContext();
-
   const navigate = useNavigate();
   const location = useLocation();
   const pathName = location?.pathname;
@@ -77,7 +72,7 @@ const Home = () => {
 
   return (
     <>
-      {user !== null && <Header />}
+      <Header />
       <Routes>
         <Route
           path="/products"

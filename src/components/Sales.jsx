@@ -13,193 +13,122 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate } from "react-router-dom";
-
-import { useFetchData } from "../hooks/useFetchData";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // components
 import Sale from "./Sale";
+import Dashboard from "./Dashboard";
 
 // custom hooks
-import { useSaleContext } from "../hooks/useSaleContext";
-import { useSaleDetailContext } from "../hooks/useSaleDetailContext";
-import { useDebtContext } from "../hooks/useDebtContext";
+import { useSaleDetails } from "../hooks/useSaleDetails";
+import { useDebts } from "../hooks/useDebts";
+import { useSales } from "../hooks/useSales";
+import { useLogout } from "../hooks/useLogout";
+import { useMessage } from "../hooks/useMessage";
 
 const Sales = () => {
-  const { getSales } = useSaleContext();
-  const { getSaleDetails } = useSaleDetailContext();
-  const { getDebts } = useDebtContext();
+  const querySales = useSales();
+  const querySaleDetails = useSaleDetails();
+  const queryDebts = useDebts();
+  const { showMessage } = useMessage();
 
-  const querySaleDetails = useFetchData(["saleDetails"], getSaleDetails);
-  const querySales = useFetchData(["sales"], getSales);
-  const queryDebts = useFetchData(["debts"], getDebts);
+  const { logout } = useLogout();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAddSale = () => {
     navigate("/add");
   };
 
-  const totalCostSold = querySaleDetails?.data
-    ?.map((saleDetail) => saleDetail.product.costPrice * saleDetail.quantity)
-    ?.reduce((acc, currentValue) => acc + currentValue, 0);
+  const sales = querySales?.data;
 
-  const totalSalesAmount = querySales?.data
-    ?.map((sale) => sale?.total)
-    ?.reduce((acc, currentValue) => acc + currentValue, 0)
-    .toFixed(2);
+  const saleDetails = querySaleDetails?.data;
 
-  const totalProfit = totalSalesAmount - totalCostSold;
+  const debts = queryDebts?.data;
 
-  const saleList = querySales?.data?.map((sale) => {
+  if (querySales?.isError && querySales?.error?.response?.status === 403) {
+    logout().then((res) => {
+      if (res.loggedOut) {
+        showMessage("Venció la sesión", "success", "purple");
+        navigate("/login", { state: { from: location }, replace: true });
+      }
+    });
+  }
+
+  const saleList = sales?.map((sale) => {
     return (
       <Sale
-        key={sale._id}
+        key={sale?._id + sale?.createdAt}
         sale={sale}
-        saleDetails={querySaleDetails?.data?.filter(
+        saleDetails={saleDetails?.filter(
           (saleDetail) => saleDetail.sale === sale._id
         )}
-        debt={queryDebts?.data?.filter((debt) => debt.sale._id === sale._id)[0]}
+        debt={debts?.filter((debt) => debt?.sale?._id === sale._id)[0]}
       />
     );
   });
 
   return (
     <>
-      {querySales.isLoading && (
-        <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={2}
-          mt={5}
-        >
-          <Card variant="outline">
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-        </Grid>
+      {querySales?.isLoading && (
+        <Card variant="outline" mt={5} mb={3}>
+          <CardBody>
+            <Stack>
+              <Skeleton height="20px" />
+              <Skeleton height="20px" />
+              <Skeleton height="20px" />
+            </Stack>
+          </CardBody>
+        </Card>
       )}
-      {!querySales?.isLoading && (
-        <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={2}
-          mt={5}
-        >
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Facturación total</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalSalesAmount
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(
-                        querySaleDetails?.data?.length > 0
-                          ? totalSalesAmount
-                          : 0
-                      )
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Costo total</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalCostSold
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(
-                        querySaleDetails?.data?.length > 0 ? totalCostSold : 0
-                      )
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Ganancia total</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalProfit
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(
-                        querySaleDetails?.data?.length > 0 ? totalProfit : 0
-                      )
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-        </Grid>
+      {!querySales?.isError && !querySales?.isLoading && (
+        <Dashboard
+          querySales={querySales}
+          querySaleDetails={querySaleDetails}
+        />
       )}
 
-      <Card variant="filled" mt={5} mb={3}>
-        <CardBody>
-          <Flex>
-            <Spacer />
-            <Button
-              onClick={() => handleAddSale()}
-              colorScheme="purple"
-              variant="solid"
-            >
-              <AddIcon boxSize={3} me={2} />
-              Nueva venta
-            </Button>
-          </Flex>
-        </CardBody>
-      </Card>
+      {!querySales?.isError && !querySales?.isLoading && (
+        <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
+          <CardBody>
+            <Flex placeItems={"center"}>
+              <Text color={"white"} fontWeight={"bold"}>
+                {saleList?.length} ventas
+              </Text>
+              <Spacer />
+              <Button
+                onClick={() => handleAddSale()}
+                colorScheme="purple"
+                variant="solid"
+              >
+                <AddIcon boxSize={3} me={2} />
+                Nueva venta
+              </Button>
+            </Flex>
+          </CardBody>
+        </Card>
+      )}
 
       {querySales?.isLoading && (
         <>
+          <Card variant="filled" mb={3}>
+            <CardBody>
+              <Flex>
+                <Spacer />
+                <Skeleton
+                  width={"170px"}
+                  startColor="purple.500"
+                  endColor="purple.300"
+                  height="40px"
+                  borderRadius={"5px"}
+                />
+              </Flex>
+            </CardBody>
+          </Card>
           <Card variant="outline" mb={3}>
             <CardBody>
               <Stack>
-                <Skeleton height="20px" />
                 <Skeleton height="20px" />
                 <Skeleton height="20px" />
               </Stack>
@@ -210,6 +139,13 @@ const Sales = () => {
               <Stack>
                 <Skeleton height="20px" />
                 <Skeleton height="20px" />
+              </Stack>
+            </CardBody>
+          </Card>
+          <Card variant="outline" mb={3}>
+            <CardBody>
+              <Stack>
+                <Skeleton height="20px" />
                 <Skeleton height="20px" />
               </Stack>
             </CardBody>
@@ -219,23 +155,12 @@ const Sales = () => {
               <Stack>
                 <Skeleton height="20px" />
                 <Skeleton height="20px" />
-                <Skeleton height="20px" />
               </Stack>
             </CardBody>
           </Card>
           <Card variant="outline" mb={3}>
             <CardBody>
               <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline" mb={3}>
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
                 <Skeleton height="20px" />
                 <Skeleton height="20px" />
               </Stack>
@@ -244,19 +169,21 @@ const Sales = () => {
         </>
       )}
 
-      {querySales?.data?.length > 0 && !querySales?.isLoading && (
-        <Grid>{saleList}</Grid>
-      )}
-      {querySales?.data?.length === 0 && !querySales?.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Alert colorScheme="purple" status="success">
-              <AlertIcon />
-              No hay ventas.
-            </Alert>
-          </CardBody>
-        </Card>
-      )}
+      {querySales?.data?.length > 0 &&
+        !querySales?.isLoading &&
+        !querySales?.isError && <Grid>{saleList}</Grid>}
+      {querySales?.data?.length === 0 &&
+        !querySales?.isError &&
+        !querySales?.isLoading && (
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Alert colorScheme="purple" status="success">
+                <AlertIcon />
+                No hay ventas.
+              </Alert>
+            </CardBody>
+          </Card>
+        )}
     </>
   );
 };

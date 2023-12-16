@@ -17,22 +17,26 @@ import {
   HamburgerIcon,
   CloseIcon,
   ChevronDownIcon,
-  // ChevronRightIcon,
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 
 import Logo from "/logo.svg";
 
 // custom hooks
-import { useAuthContext } from "../hooks/useAuthContext";
+import { useLogout } from "../hooks/useLogout";
+
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { isOpen, onToggle } = useDisclosure();
 
-  const { user, logout } = useAuthContext();
+  const { logout } = useLogout();
 
-  const handleLogout = () => {
-    logout();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   return (
@@ -84,7 +88,7 @@ const Header = () => {
           </Flex>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
-            <DesktopNav user={user} />
+            <DesktopNav navigate={navigate} />
           </Flex>
         </Flex>
 
@@ -110,13 +114,13 @@ const Header = () => {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav user={user} />
+        <MobileNav navigate={navigate} />
       </Collapse>
     </Box>
   );
 };
 
-const DesktopNav = ({ user }) => {
+const DesktopNav = ({ navigate }) => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   // const popoverContentBgColor = useColorModeValue("white", "gray.800");
@@ -124,7 +128,7 @@ const DesktopNav = ({ user }) => {
   return (
     <Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => {
-        if (navItem?.profiles?.includes(user?.profile)) {
+        if (navItem) {
           return (
             <Box key={navItem.label}>
               {/* <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -140,7 +144,9 @@ const DesktopNav = ({ user }) => {
                 <Box
                   as="a"
                   p={2}
-                  href={navItem.href ?? "#"}
+                  // href={navItem.href ?? "#"}
+
+                  onClick={() => navigate(navItem.href)}
                   fontSize={"sm"}
                   fontWeight={500}
                   color={linkColor}
@@ -149,6 +155,7 @@ const DesktopNav = ({ user }) => {
                     color: { linkHoverColor },
                     bg: "purple.100",
                     borderRadius: "5px",
+                    cursor: "pointer",
                   }}
                 >
                   {navItem.label}
@@ -219,7 +226,7 @@ const DesktopNav = ({ user }) => {
 //   );
 // };
 
-const MobileNav = ({ user }) => {
+const MobileNav = ({ navigate }) => {
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
@@ -227,15 +234,21 @@ const MobileNav = ({ user }) => {
       display={{ md: "none" }}
     >
       {NAV_ITEMS.map((navItem) => {
-        if (navItem?.profiles?.includes(user?.profile)) {
-          return <MobileNavItem key={navItem.label} {...navItem} />;
+        if (navItem) {
+          return (
+            <MobileNavItem
+              key={navItem.label}
+              {...navItem}
+              navigate={navigate}
+            />
+          );
         }
       })}
     </Stack>
   );
 };
 
-const MobileNavItem = ({ label, children, href }) => {
+const MobileNavItem = ({ label, children, href, navigate }) => {
   const { isOpen, onToggle } = useDisclosure();
 
   return (
@@ -253,7 +266,8 @@ const MobileNavItem = ({ label, children, href }) => {
         <Box
           p={3}
           as="a"
-          href={href ?? "#"}
+          // href={href ?? "#"}
+          onClick={() => navigate(href)}
           justifyContent="space-between"
           alignItems="center"
           _hover={{
@@ -300,37 +314,37 @@ const NAV_ITEMS = [
   {
     label: "Ventas",
     href: "/",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Deudas",
     href: "/debts",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Divider",
     href: "#",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Productos",
     href: "/products",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Categorias",
     href: "/categories",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Clientes",
     href: "/clients",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Gráficos",
     href: "/reports",
-    profiles: ["System Administrator", "Seller"],
+    // profiles: ["System Administrator", "Seller"],
   },
 ];
 

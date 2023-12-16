@@ -26,45 +26,43 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-import { useQuery } from "react-query";
-
-import { useSaleContext } from "../hooks/useSaleContext";
-import { useDebtContext } from "../hooks/useDebtContext";
-import { useSaleDetailContext } from "../hooks/useSaleDetailContext";
-
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
+
+import { useSaleDetails } from "../hooks/useSaleDetails";
+import { usePayDebt } from "../hooks/usePayDebt";
+import { useDeleteSale } from "../hooks/useDeleteSale";
 
 const Debt = ({ debt }) => {
   const navigate = useNavigate();
 
-  const { handlePaid } = useDebtContext();
+  const { payDebt } = usePayDebt();
 
-  const { handleDeleteSale } = useSaleContext();
+  const { deleteSale } = useDeleteSale();
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const { getSaleDetails } = useSaleDetailContext();
+  const querySaleDetails = useSaleDetails();
 
-  const { data: saleDetails } = useQuery({
-    queryKey: ["saleDetails"],
-    queryFn: getSaleDetails,
-  });
-
-  const saleDetailsToDelete = saleDetails?.filter(
+  const saleDetailsToDelete = querySaleDetails?.data?.filter(
     (saleDetail) => saleDetail.sale === debt?.sale?._id
   );
 
-  const handlePaidTotal = () => {
-    handlePaid(debt);
+  const handlePaidTotal = async () => {
+    await payDebt({ debtToUpdate: debt });
   };
 
   const handleEdit = () => {
     navigate(`${debt?._id}/edit`);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setIsLoading(true);
-    handleDeleteSale(debt?.sale, saleDetailsToDelete, debt);
+    await deleteSale({
+      saleId: debt?.sale?._id,
+      saleDetails: saleDetailsToDelete,
+      debt: debt,
+    });
     navigate("/debts");
   };
 

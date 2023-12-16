@@ -1,41 +1,40 @@
-import axios from "axios";
-import { BACKEND_BASE_URL } from "./api";
-
-const baseUrl = `${BACKEND_BASE_URL}/api/v1/sales`;
+const SALE_URL = "/api/v1/sales";
 
 const saleService = {
-  getAll: async (filters) => {
+  getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
     if (filters.month && filters.year) {
-      finalUrl = `${baseUrl}?month=${filters.month}&year=${filters.year}`;
+      finalUrl = `${SALE_URL}?month=${filters.month}&year=${filters.year}`;
     } else {
-      finalUrl = baseUrl;
+      finalUrl = SALE_URL;
     }
 
-    const { data } = await axios.get(finalUrl, { withCredentials: true });
-    return data;
-  },
-  getOne: async (id) => {
-    const { data } = await axios.get(`${baseUrl}/${id}`, {
+    const { data } = await axiosPrivate.get(finalUrl, {
       withCredentials: true,
     });
     return data;
   },
-  store: async (newSale) => {
-    const { data } = await axios.post(baseUrl, newSale, {
+  getOne: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.get(`${SALE_URL}/${id}`, {
       withCredentials: true,
     });
     return data;
   },
-  delete: async (id) => {
-    const { data } = await axios.delete(`${baseUrl}/${id}`, {
+  store: async (newSale, axiosPrivate) => {
+    const { data } = await axiosPrivate.post(SALE_URL, newSale, {
       withCredentials: true,
     });
     return data;
   },
-  update: async (id, saleToUpdate) => {
-    const { data } = await axios.put(`${baseUrl}/${id}`, saleToUpdate, {
+  delete: async (id, axiosPrivate) => {
+    const { data } = await axiosPrivate.delete(`${SALE_URL}/${id}`, {
+      withCredentials: true,
+    });
+    return data;
+  },
+  update: async (id, saleToUpdate, axiosPrivate) => {
+    const { data } = await axiosPrivate.put(`${SALE_URL}/${id}`, saleToUpdate, {
       withCredentials: true,
     });
     return data;
