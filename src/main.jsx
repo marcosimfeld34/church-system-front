@@ -40,7 +40,7 @@ root.render(
           </BrowserRouter>
         </UserContextProvider>
       </ChakraProvider>
-      <ReactQueryDevtools />
+      {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   </React.StrictMode>
 );
