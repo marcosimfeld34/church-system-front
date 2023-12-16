@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom/client";
-import { disableReactDevTools } from "@fvilers/disable-react-devtools";
+// import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 import App from "./App";
 
 import { ChakraProvider } from "@chakra-ui/react";
@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 });
 
 // if (import.meta.env.VITE_VERCEL_ENV === "production") {
-disableReactDevTools();
+// disableReactDevTools();
 // }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
