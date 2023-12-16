@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = import.meta.env.VITE_VERCEL_URL;
+const BASE_URL = "https://church-system-dev-pmhk.4.us-1.fl0.io";
 
 export default axios.create({
   baseURL: BASE_URL,
