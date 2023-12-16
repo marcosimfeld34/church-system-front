@@ -36,4 +36,9 @@ const manifestForPlugIn = {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), VitePWA(manifestForPlugIn)],
+  define: {
+    "process.env.VITE_VERCEL_ENV": "production",
+    "process.env.VITE_VERCEL_URL":
+      "https://church-system-dev-pmhk.4.us-1.fl0.io",
+  },
 });
