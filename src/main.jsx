@@ -23,9 +23,9 @@ const queryClient = new QueryClient({
   },
 });
 
-// if (import.meta.env.VITE_VERCEL_ENV === "production") {
-disableReactDevTools();
-// }
+if (import.meta.env.VITE_VERCEL_ENV === "production") {
+  disableReactDevTools();
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
