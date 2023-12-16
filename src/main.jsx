@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
   },
 });
 
-if (import.meta.env.VITE_NODE_ENV === "production") {
+if (import.meta.env.VITE_VERCEL_ENV === "production") {
   disableReactDevTools();
 }
 
