@@ -6,7 +6,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 
 import React from "react";
 
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -40,7 +40,7 @@ root.render(
           </BrowserRouter>
         </UserContextProvider>
       </ChakraProvider>
-      <ReactQueryDevtools />
+      {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   </React.StrictMode>
 );
