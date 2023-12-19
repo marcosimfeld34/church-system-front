@@ -25,7 +25,7 @@ const Dashboard = ({ querySales, querySaleDetails }) => {
     () =>
       saleDetails
         ?.map(
-          (saleDetail) => saleDetail.product.costPrice * saleDetail.quantity
+          (saleDetail) => saleDetail?.product?.costPrice * saleDetail?.quantity
         )
         ?.reduce((acc, currentValue) => acc + currentValue, 0),
     [saleDetails]
