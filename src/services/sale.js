@@ -3,9 +3,8 @@ const SALE_URL = "/api/v1/sales";
 const saleService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
-
-    if (filters.month && filters.year) {
-      finalUrl = `${SALE_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.startDate && filters.endDate) {
+      finalUrl = `${SALE_URL}?startDate=${filters.startDate}&endDate=${filters.endDate}`;
     } else {
       finalUrl = SALE_URL;
     }

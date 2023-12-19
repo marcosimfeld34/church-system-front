@@ -33,11 +33,11 @@ import { useSales } from "../hooks/useSales";
 const SaleDetails = () => {
   const { saleId } = useParams();
 
-  const querySales = useSales();
+  const { query: querySales } = useSales();
 
   const sale = querySales?.data?.filter((sale) => sale._id === saleId)[0];
 
-  const querySaleDetails = useSaleDetails();
+  const { query: querySaleDetails } = useSaleDetails();
 
   const saleDetails = querySaleDetails?.data?.filter(
     (saleDetail) => saleDetail?.sale === saleId
@@ -181,7 +181,7 @@ const SaleDetails = () => {
                           style: "currency",
                           minimumFractionDigits: 2,
                           currency: "USD",
-                        }).format(sale.total.toFixed(2))}
+                        }).format(sale?.total.toFixed(2))}
                       </Text>
                     </Flex>
                     <Flex

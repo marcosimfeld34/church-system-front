@@ -4,8 +4,8 @@ const saleDetailService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
-    if (filters.month && filters.year) {
-      finalUrl = `${SALEDETAIL_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.startDate && filters.endDate) {
+      finalUrl = `${SALEDETAIL_URL}?startDate=${filters.startDate}&endDate=${filters.endDate}`;
     } else {
       finalUrl = SALEDETAIL_URL;
     }

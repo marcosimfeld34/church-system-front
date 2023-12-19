@@ -52,6 +52,8 @@ const Sale = ({ sale, saleDetails, debt }) => {
     navigate(`/${sale._id}/details`);
   };
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const handleDelete = async () => {
     setIsLoading(true);
     const response = await deleteSale({
@@ -59,6 +61,7 @@ const Sale = ({ sale, saleDetails, debt }) => {
       saleDetails,
       debt: debt,
     });
+
     if (response?.isDeleted) {
       showMessage("Venta eliminada.", "success", "purple");
       setIsLoading(false);
@@ -68,11 +71,7 @@ const Sale = ({ sale, saleDetails, debt }) => {
       showMessage("No se pudo eliminar", "error", "red");
       setIsLoading(false);
     }
-
-    navigate("/");
   };
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
@@ -102,11 +101,11 @@ const Sale = ({ sale, saleDetails, debt }) => {
                       Vendedor: {sale?.createdBy?.firstName}{" "}
                       {sale?.createdBy?.lastName}
                     </Text>
-                    {/* <Text color={"gray.500"} fontSize="xs" align="start">
+                    <Text color={"gray.500"} fontSize="xs" align="start">
                       {format(new Date(sale?.createdAt), "eeee dd yyyy", {
                         locale: es,
                       })}
-                    </Text> */}
+                    </Text>
                   </Flex>
                 </GridItem>
 
@@ -198,9 +197,11 @@ const Sale = ({ sale, saleDetails, debt }) => {
             </CardBody>
           </Card>
           <Modal
+            closeOnOverlayClick={false}
             size={{ base: "xs", md: "lg" }}
             isOpen={isOpen}
             onClose={onClose}
+            isCentered
           >
             <ModalOverlay />
             <ModalContent>
@@ -223,7 +224,11 @@ const Sale = ({ sale, saleDetails, debt }) => {
                 >
                   Borrar
                 </Button>
-                <Button onClick={onClose} variant="ghost">
+                <Button
+                  isDisabled={isLoading}
+                  onClick={onClose}
+                  variant="ghost"
+                >
                   Cancelar
                 </Button>
               </ModalFooter>

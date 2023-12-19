@@ -44,9 +44,9 @@ const SaleForm = () => {
 
   const queryProducts = useProducts();
   const queryClients = useClients();
-  const querySales = useSales();
-  const querySaleDetails = useSaleDetails();
-  const queryDebts = useDebts();
+  const { query: querySales } = useSales();
+  const { query: querySaleDetails } = useSaleDetails();
+  const { query: queryDebts } = useDebts();
 
   const { logout } = useLogout();
   const location = useLocation();
@@ -301,9 +301,9 @@ const SaleForm = () => {
                 products: productsToUpdate,
               });
 
-              showMessage("Venta actualizada.", "success", "purple");
-
               navigate("/");
+              showMessage("Venta actualizada.", "success", "purple");
+              return true;
             }
           }
         }
@@ -350,6 +350,9 @@ const SaleForm = () => {
           onSubmit={onSubmit}
           onCancelOperation={onCancelOperation}
           saleToUpdate={{ ...querySales?.data?.find((s) => s._id === saleId) }}
+          saleDetails={querySaleDetails?.data?.filter(
+            (saleDetail) => saleDetail.sale === saleId
+          )}
         />
       )}
       {!saleId && (

@@ -92,12 +92,12 @@ const Debts = () => {
                     ? new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
-                        currency: "ARS",
+                        currency: "USD",
                       }).format(totalAmountByClient)
                     : new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
-                        currency: "ARS",
+                        currency: "USD",
                       }).format(0)}
                 </Text>
               )}

@@ -33,7 +33,7 @@ import { useUpdateManyProducts } from "../hooks/useUpdateManyProducts";
 import { useDeleteManySaleDetails } from "../hooks/useDeleteManySaleDetails";
 
 const SaleFormEdit = (props) => {
-  const { onSubmit, onCancelOperation, saleToUpdate } = props;
+  const { onSubmit, onCancelOperation, saleToUpdate, saleDetails } = props;
 
   const toast = useToast();
 
@@ -44,7 +44,6 @@ const SaleFormEdit = (props) => {
 
   const products = queryClient.getQueryData(["products"]);
   const clients = queryClient.getQueryData(["clients"]);
-  const saleDetails = queryClient.getQueryData(["saleDetails"]);
 
   const SaleSchema = Yup.object().shape({
     client: Yup.string().required("Requerido"),
@@ -85,7 +84,8 @@ const SaleFormEdit = (props) => {
     validationSchema: SaleSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      if (formik.values.isLoading) return;
+      // if (formik.values.isLoading) return;
+
       const productsWithoutStock = [];
 
       formik.values.saleItems?.forEach((saleItem, index) => {
@@ -124,8 +124,8 @@ const SaleFormEdit = (props) => {
 
         const error = await onSubmit(values);
 
-        if (error === false) {
-          formik.setFieldValue("isLoading", error);
+        if (!error) {
+          formik.setFieldValue("isLoading", false);
         }
       }
     },

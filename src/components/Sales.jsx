@@ -10,10 +10,19 @@ import {
   Skeleton,
   Alert,
   AlertIcon,
+  FormControl,
+  FormLabel,
+  Input,
+  GridItem,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 
 import { useNavigate, useLocation } from "react-router-dom";
+
+// formik
+import { useFormik } from "formik";
+
+import * as Yup from "yup";
 
 // components
 import Sale from "./Sale";
@@ -27,8 +36,12 @@ import { useLogout } from "../hooks/useLogout";
 import { useMessage } from "../hooks/useMessage";
 
 const Sales = () => {
-  const querySales = useSales();
-  const querySaleDetails = useSaleDetails();
+  const { query: querySales, setRangeDateFilter } = useSales();
+  const {
+    query: querySaleDetails,
+    setRangeDateFilter: setRangeDateFilterSaleDetail,
+  } = useSaleDetails();
+
   const queryDebts = useDebts();
   const { showMessage } = useMessage();
 
@@ -55,6 +68,66 @@ const Sales = () => {
       }
     });
   }
+
+  const RangeDateFilterSchema = Yup.object().shape({
+    startDate: Yup.string().required("Requerido"),
+    endDate: Yup.string().required("Requerido"),
+  });
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    formik.values.startDate;
+
+    setRangeDateFilter({
+      startDate: formik.values.startDate,
+      endDate: formik.values.endDate,
+    });
+
+    setRangeDateFilterSaleDetail({
+      startDate: formik.values.startDate,
+      endDate: formik.values.endDate,
+    });
+
+    window.localStorage.setItem(
+      "filters",
+      JSON.stringify({
+        startDate: formik.values.startDate,
+        endDate: formik.values.endDate,
+      })
+    );
+  };
+
+  const today = `${new Date().getFullYear()}-${
+    new Date().getMonth() + 1
+  }-${new Date().getDate()}`;
+
+  const filters = JSON.parse(window.localStorage.getItem("filters"));
+
+  const formik = useFormik({
+    initialValues: filters
+      ? { ...filters }
+      : {
+          startDate: today,
+          endDate: today,
+        },
+    validationSchema: RangeDateFilterSchema,
+    onSubmit: handleOnSubmit,
+  });
+
+  const handleResetFilters = () => {
+    window.localStorage.setItem(
+      "filters",
+      JSON.stringify({
+        startDate: today,
+        endDate: today,
+      })
+    );
+
+    formik.setValues({
+      startDate: today,
+      endDate: today,
+    });
+  };
 
   const saleList = sales?.map((sale) => {
     return (
@@ -169,21 +242,85 @@ const Sales = () => {
         </>
       )}
 
-      {querySales?.data?.length > 0 &&
-        !querySales?.isLoading &&
-        !querySales?.isError && <Grid>{saleList}</Grid>}
-      {querySales?.data?.length === 0 &&
-        !querySales?.isError &&
-        !querySales?.isLoading && (
-          <Card variant="outline" mt={5} mb={3}>
-            <CardBody>
-              <Alert colorScheme="purple" status="success">
-                <AlertIcon />
-                No hay ventas.
-              </Alert>
-            </CardBody>
-          </Card>
-        )}
+      <Grid gap={2} templateColumns="repeat(12, 1fr)">
+        <GridItem
+          colSpan={{ base: 12, md: 12, lg: 3 }}
+          colStart={{ base: 1, md: 1, lg: 1 }}
+        >
+          {!querySales?.isError && !querySales?.isLoading && (
+            <Card variant="outline">
+              <CardBody>
+                <form noValidate onSubmit={handleOnSubmit}>
+                  <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={2}>
+                    <GridItem colSpan={{ base: 12, md: 6, lg: 12 }}>
+                      <FormControl>
+                        <FormLabel htmlFor="startDate">Desde:</FormLabel>
+                        <Input
+                          name="startDate"
+                          id="startDate"
+                          type="date"
+                          value={formik.values.startDate}
+                          onChange={formik.handleChange}
+                          placeholder="Fecha desde"
+                        />
+                      </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={{ base: 12, md: 6, lg: 12 }}>
+                      <FormControl mb={2}>
+                        <FormLabel htmlFor="endDate">Hasta:</FormLabel>
+                        <Input
+                          name="endDate"
+                          id="endDate"
+                          type="date"
+                          value={formik.values.endDate}
+                          onChange={formik.handleChange}
+                          placeholder="Fecha hasta"
+                        />
+                      </FormControl>
+                    </GridItem>
+                  </Grid>
+                  <Stack
+                    direction={{ base: "row", lg: "column", xl: "row" }}
+                    justifyContent={"space-between"}
+                  >
+                    <Button type="submit" colorScheme="purple" variant="solid">
+                      <SearchIcon boxSize={3} me={2} />
+                      Buscar
+                    </Button>
+                    <Button
+                      onClick={() => handleResetFilters()}
+                      colorScheme="gray"
+                      variant="solid"
+                    >
+                      Reiniciar
+                    </Button>
+                  </Stack>
+                </form>
+              </CardBody>
+            </Card>
+          )}
+        </GridItem>
+        <GridItem
+          colSpan={{ base: 12, md: 12, lg: 9 }}
+          colStart={{ base: 1, md: 1, lg: 4 }}
+        >
+          {querySales?.data?.length > 0 &&
+            !querySales?.isLoading &&
+            !querySales?.isError && <>{saleList}</>}
+          {querySales?.data?.length === 0 &&
+            !querySales?.isError &&
+            !querySales?.isLoading && (
+              <Card variant="outline">
+                <CardBody>
+                  <Alert colorScheme="purple" status="success">
+                    <AlertIcon />
+                    No se encontró resultados.
+                  </Alert>
+                </CardBody>
+              </Card>
+            )}
+        </GridItem>
+      </Grid>
     </>
   );
 };
