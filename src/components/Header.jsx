@@ -7,7 +7,7 @@ import {
   Stack,
   Collapse,
   Icon,
-  Image,
+  // Image,
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
@@ -20,7 +20,7 @@ import {
   ArrowForwardIcon,
 } from "@chakra-ui/icons";
 
-import Logo from "/logo.svg";
+// import Logo from "/logo.svg";
 
 // custom hooks
 import { useLogout } from "../hooks/useLogout";
@@ -71,12 +71,12 @@ const Header = () => {
           justify={{ base: "center", md: "space-between" }}
         >
           <Flex gap={1}>
-            <Image
+            {/* <Image
               borderRadius="full"
               boxSize={{ base: 50, md: 25 }}
               src={Logo}
               alt="el rio logo"
-            />
+            /> */}
             <Text
               display={{ base: "none", md: "flex" }}
               textAlign={useBreakpointValue({ base: "center", md: "left" })}

@@ -5,8 +5,8 @@ import {
   Button,
   Card,
   CardBody,
-  Image,
-  Box,
+  // Image,
+  // Box,
   FormLabel,
   FormControl,
   FormErrorMessage,
@@ -17,6 +17,8 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  CardHeader,
+  Heading,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +33,7 @@ import { useMessage } from "../hooks/useMessage";
 // services
 import loginService from "../services/login";
 
-import Logo from "/logo.svg";
+// import Logo from "/logo.svg";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -162,15 +164,18 @@ const Register = () => {
           colStart={{ base: 2, sm: 3, md: 4 }}
         >
           <Card mb={3} variant="outline">
+            <CardHeader textAlign={"center"}>
+              <Heading size="md">Registro</Heading>
+            </CardHeader>
             <CardBody>
-              <Box mb={2} p={2} display={"flex"} placeContent={"center"}>
+              {/* <Box mb={2} p={2} display={"flex"} placeContent={"center"}>
                 <Image
                   borderRadius="full"
                   boxSize={{ base: 100, md: 150 }}
                   src={Logo}
                   alt="el rio logo"
                 />
-              </Box>
+              </Box> */}
               <form noValidate onSubmit={formik.handleSubmit}>
                 <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={2}>
                   <GridItem colSpan={{ base: 12, md: 6 }}>

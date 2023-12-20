@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   CardBody,
-  Image,
+  // Image,
   FormLabel,
   FormControl,
   FormErrorMessage,
@@ -16,7 +16,9 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
-  Box,
+  // Box,
+  CardHeader,
+  Heading,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -25,7 +27,7 @@ import * as Yup from "yup";
 // formik
 import { useFormik } from "formik";
 
-import Logo from "/logo.svg";
+// import Logo from "/logo.svg";
 
 // custom hooks
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -123,15 +125,18 @@ const Login = () => {
           colStart={{ base: 2, sm: 3, md: 4 }}
         >
           <Card mb={3} variant="outline">
+            <CardHeader textAlign={"center"}>
+              <Heading size="md">Inicio de sesión</Heading>
+            </CardHeader>
             <CardBody>
-              <Box p={2} display={"flex"} placeContent={"center"}>
+              {/* <Box p={2} display={"flex"} placeContent={"center"}>
                 <Image
                   borderRadius="full"
                   boxSize={{ base: 100, md: 150 }}
                   src={Logo}
                   alt="el rio logo"
                 />
-              </Box>
+              </Box> */}
               <form noValidate onSubmit={formik.handleSubmit}>
                 <Grid mb={4}>
                   <GridItem>
