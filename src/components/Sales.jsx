@@ -34,8 +34,12 @@ import { useDebts } from "../hooks/useDebts";
 import { useSales } from "../hooks/useSales";
 import { useLogout } from "../hooks/useLogout";
 import { useMessage } from "../hooks/useMessage";
+import { useState } from "react";
 
 const Sales = () => {
+  const [showFilters, setShowFilters] = useState(
+    JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
+  );
   const { query: querySales, setRangeDateFilter } = useSales();
   const {
     query: querySaleDetails,
@@ -142,6 +146,22 @@ const Sales = () => {
     );
   });
 
+  const handleToggle = () => {
+    if (showFilters) {
+      setShowFilters(false);
+      window.localStorage.setItem(
+        "showFilters",
+        JSON.stringify({ showFilters: false })
+      );
+    } else {
+      setShowFilters(true);
+      window.localStorage.setItem(
+        "showFilters",
+        JSON.stringify({ showFilters: true })
+      );
+    }
+  };
+
   return (
     <>
       {querySales?.isLoading && (
@@ -244,65 +264,84 @@ const Sales = () => {
 
       <Grid gap={2} templateColumns="repeat(12, 1fr)">
         <GridItem
-          colSpan={{ base: 12, md: 12, lg: 3 }}
-          colStart={{ base: 1, md: 1, lg: 1 }}
-        >
-          {!querySales?.isError && !querySales?.isLoading && (
-            <Card variant="outline">
-              <CardBody>
-                <form noValidate onSubmit={handleOnSubmit}>
-                  <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={2}>
-                    <GridItem colSpan={{ base: 12, md: 6, lg: 12 }}>
-                      <FormControl>
-                        <FormLabel htmlFor="startDate">Desde:</FormLabel>
-                        <Input
-                          name="startDate"
-                          id="startDate"
-                          type="date"
-                          value={formik.values.startDate}
-                          onChange={formik.handleChange}
-                          placeholder="Fecha desde"
-                        />
-                      </FormControl>
-                    </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6, lg: 12 }}>
-                      <FormControl mb={2}>
-                        <FormLabel htmlFor="endDate">Hasta:</FormLabel>
-                        <Input
-                          name="endDate"
-                          id="endDate"
-                          type="date"
-                          value={formik.values.endDate}
-                          onChange={formik.handleChange}
-                          placeholder="Fecha hasta"
-                        />
-                      </FormControl>
-                    </GridItem>
-                  </Grid>
-                  <Stack
-                    direction={{ base: "row", lg: "column", xl: "row" }}
-                    justifyContent={"space-between"}
-                  >
-                    <Button type="submit" colorScheme="purple" variant="solid">
-                      <SearchIcon boxSize={3} me={2} />
-                      Buscar
-                    </Button>
-                    <Button
-                      onClick={() => handleResetFilters()}
-                      colorScheme="gray"
-                      variant="solid"
-                    >
-                      Reiniciar
-                    </Button>
-                  </Stack>
-                </form>
-              </CardBody>
-            </Card>
-          )}
-        </GridItem>
-        <GridItem
           colSpan={{ base: 12, md: 12, lg: 9 }}
           colStart={{ base: 1, md: 1, lg: 4 }}
+          justifySelf={"end"}
+        >
+          <Button
+            display={{ base: "block" }}
+            variant={"ghost"}
+            onClick={() => handleToggle()}
+          >
+            {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+          </Button>
+        </GridItem>
+        {showFilters && (
+          <GridItem
+            colSpan={{ base: 12, md: 12, lg: 3 }}
+            colStart={{ base: 1, md: 1, lg: 1 }}
+          >
+            {!querySales?.isError && !querySales?.isLoading && (
+              <Card variant="outline">
+                <CardBody>
+                  <form noValidate onSubmit={handleOnSubmit}>
+                    <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={2}>
+                      <GridItem colSpan={{ base: 12, md: 6, lg: 12 }}>
+                        <FormControl>
+                          <FormLabel htmlFor="startDate">Desde:</FormLabel>
+                          <Input
+                            name="startDate"
+                            id="startDate"
+                            type="date"
+                            value={formik.values.startDate}
+                            onChange={formik.handleChange}
+                            placeholder="Fecha desde"
+                          />
+                        </FormControl>
+                      </GridItem>
+                      <GridItem colSpan={{ base: 12, md: 6, lg: 12 }}>
+                        <FormControl mb={2}>
+                          <FormLabel htmlFor="endDate">Hasta:</FormLabel>
+                          <Input
+                            name="endDate"
+                            id="endDate"
+                            type="date"
+                            value={formik.values.endDate}
+                            onChange={formik.handleChange}
+                            placeholder="Fecha hasta"
+                          />
+                        </FormControl>
+                      </GridItem>
+                    </Grid>
+                    <Stack
+                      direction={{ base: "row", lg: "column", xl: "row" }}
+                      justifyContent={"space-between"}
+                    >
+                      <Button
+                        type="submit"
+                        colorScheme="purple"
+                        variant="solid"
+                      >
+                        <SearchIcon boxSize={3} me={2} />
+                        Buscar
+                      </Button>
+                      <Button
+                        onClick={() => handleResetFilters()}
+                        colorScheme="gray"
+                        variant="solid"
+                      >
+                        Reiniciar
+                      </Button>
+                    </Stack>
+                  </form>
+                </CardBody>
+              </Card>
+            )}
+          </GridItem>
+        )}
+        <GridItem
+          colSpan={{ base: 12, md: 12, lg: showFilters ? 9 : 12 }}
+          colStart={{ base: 1, md: 1, lg: showFilters ? 4 : 1 }}
         >
           {querySales?.data?.length > 0 &&
             !querySales?.isLoading &&

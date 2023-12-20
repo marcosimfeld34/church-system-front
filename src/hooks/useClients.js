@@ -13,6 +13,7 @@ export const useClients = () => {
       const { data } = await clientService.getAll({}, axiosPrivate);
       return data;
     },
+    staleTime: Infinity,
   });
 
   return query;

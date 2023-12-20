@@ -13,6 +13,7 @@ export const useProducts = () => {
       const { data } = await productService.getAll({}, axiosPrivate);
       return data;
     },
+    staleTime: Infinity,
   });
 
   return query;

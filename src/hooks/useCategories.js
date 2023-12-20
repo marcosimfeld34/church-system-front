@@ -13,6 +13,7 @@ export const useCategories = () => {
       const { data } = await categoryService.getAll({}, axiosPrivate);
       return data;
     },
+    staleTime: Infinity,
   });
 
   return query;
