@@ -9,7 +9,7 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  HStack,
+  Stack,
   Checkbox,
   Flex,
   SimpleGrid,
@@ -491,14 +491,12 @@ const SaleFormEdit = (props) => {
                 );
               })}
 
-              <HStack justifyContent={"end"} mt={6}>
-                <Button
-                  onClick={() => onCancelOperation()}
-                  colorScheme="gray"
-                  variant="solid"
-                >
-                  Cancelar
-                </Button>
+              <Stack
+                mt={6}
+                spacing={3}
+                direction={{ base: "column", md: "row" }}
+                justifyContent={"end"}
+              >
                 <Button
                   isLoading={formik.values.isLoading}
                   type="submit"
@@ -507,7 +505,14 @@ const SaleFormEdit = (props) => {
                 >
                   Actualizar
                 </Button>
-              </HStack>
+                <Button
+                  onClick={() => onCancelOperation()}
+                  colorScheme="gray"
+                  variant="solid"
+                >
+                  Cancelar
+                </Button>
+              </Stack>
             </form>
           </CardBody>
         </Card>

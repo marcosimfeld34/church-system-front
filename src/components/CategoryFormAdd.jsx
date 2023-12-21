@@ -9,8 +9,7 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  VStack,
-  StackDivider,
+  Stack,
 } from "@chakra-ui/react";
 import * as Yup from "yup";
 
@@ -74,10 +73,10 @@ const CategoryFormAdd = (props) => {
                   </GridItem>
                 </Grid>
 
-                <VStack
-                  divider={<StackDivider borderColor="gray.200" />}
+                <Stack
                   spacing={3}
-                  align="stretch"
+                  direction={{ base: "column", md: "row" }}
+                  justifyContent={"end"}
                 >
                   <Button
                     isLoading={formik.values.isLoading}
@@ -94,7 +93,7 @@ const CategoryFormAdd = (props) => {
                   >
                     Cancelar
                   </Button>
-                </VStack>
+                </Stack>
               </form>
             </CardBody>
           </Card>

@@ -9,8 +9,7 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  VStack,
-  StackDivider,
+  Stack,
 } from "@chakra-ui/react";
 import * as Yup from "yup";
 import Select from "react-select";
@@ -159,10 +158,10 @@ const DebtFormEdit = (props) => {
                   </GridItem>
                 </Grid>
 
-                <VStack
-                  divider={<StackDivider borderColor="gray.200" />}
+                <Stack
                   spacing={3}
-                  align="stretch"
+                  direction={{ base: "column", md: "row" }}
+                  justifyContent={"end"}
                 >
                   <Button
                     isLoading={values.isLoading}
@@ -179,7 +178,7 @@ const DebtFormEdit = (props) => {
                   >
                     Cancelar
                   </Button>
-                </VStack>
+                </Stack>
               </form>
             </CardBody>
           </Card>
