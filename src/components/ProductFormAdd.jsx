@@ -72,8 +72,8 @@ const ProductFormAdd = (props) => {
                 Nuevo producto:
               </Heading>
               <form noValidate onSubmit={formik.handleSubmit}>
-                <Grid mb={4}>
-                  <GridItem>
+                <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
                     <FormControl
                       isInvalid={formik.errors.name && formik.touched.name}
                     >
@@ -97,9 +97,7 @@ const ProductFormAdd = (props) => {
                       )}
                     </FormControl>
                   </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
                     <FormControl
                       isInvalid={
                         formik.errors.costPrice && formik.touched.costPrice
@@ -130,9 +128,7 @@ const ProductFormAdd = (props) => {
                       )}
                     </FormControl>
                   </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
                     <FormControl
                       isInvalid={
                         formik.errors.salePrice && formik.touched.salePrice
@@ -163,9 +159,7 @@ const ProductFormAdd = (props) => {
                       )}
                     </FormControl>
                   </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
                     <FormControl>
                       <FormLabel>Porcentaje de ganancia:</FormLabel>
                       <Text>
@@ -188,9 +182,7 @@ const ProductFormAdd = (props) => {
                       )}
                     </FormControl>
                   </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
                     <FormControl
                       isInvalid={
                         formik.errors.category && formik.touched.category
@@ -221,9 +213,7 @@ const ProductFormAdd = (props) => {
                       )}
                     </FormControl>
                   </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
                     <FormControl
                       isInvalid={formik.errors.stock && formik.touched.stock}
                     >
