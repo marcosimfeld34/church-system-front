@@ -37,7 +37,7 @@ const SaleDetails = () => {
 
   const sale = querySales?.data?.filter((sale) => sale._id === saleId)[0];
 
-  const { query: querySaleDetails } = useSaleDetails();
+  const { query: querySaleDetails } = useSaleDetails({ all: false });
 
   const saleDetails = querySaleDetails?.data?.filter(
     (saleDetail) => saleDetail?.sale === saleId

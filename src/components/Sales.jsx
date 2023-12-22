@@ -44,7 +44,7 @@ const Sales = () => {
   const {
     query: querySaleDetails,
     setRangeDateFilter: setRangeDateFilterSaleDetail,
-  } = useSaleDetails();
+  } = useSaleDetails({ all: false });
 
   const queryDebts = useDebts();
   const { showMessage } = useMessage();

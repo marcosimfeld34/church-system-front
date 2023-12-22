@@ -9,6 +9,7 @@ import {
   Flex,
   Card,
   CardBody,
+  Box,
 } from "@chakra-ui/react";
 import {
   FaHouse,
@@ -33,6 +34,7 @@ import Clients from "./Clients";
 import Debts from "./Debts";
 import DebtForm from "./DebtForm";
 import BarChart from "./BarChart";
+import ProductsSold from "./ProductsSold";
 import PageNotFound from "./PageNotFound";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -72,6 +74,17 @@ const Home = () => {
 
   return (
     <>
+      {import.meta.env.VITE_VERCEL_ENV === "development" && (
+        <Box
+          bgGradient="linear(to-r, blue.200, blue.500, blue.200)"
+          w="100%"
+          p={1}
+          color="white"
+          textAlign={"center"}
+        >
+          Sandbox Dev
+        </Box>
+      )}
       <Header />
       <Routes>
         <Route
@@ -182,6 +195,25 @@ const Home = () => {
                 <Card variant="outline" mb={3}>
                   <CardBody>
                     <BarChart />
+                  </CardBody>
+                </Card>
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route
+          path="/products-sold"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Card variant="outline" mb={3}>
+                  <CardBody>
+                    <ProductsSold />
                   </CardBody>
                 </Card>
               </GridItem>

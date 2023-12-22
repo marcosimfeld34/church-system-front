@@ -3,59 +3,60 @@ import {
   Card,
   CardBody,
   Flex,
-  Text,
   Stack,
   Skeleton,
   FormControl,
   Alert,
   AlertIcon,
+  FormLabel,
+  Text,
 } from "@chakra-ui/react";
+
 import Select from "react-select";
 import { useState } from "react";
 
-// components
-import Debt from "./Debt";
-
 // custom hooks
-import { useDebts } from "../hooks/useDebts";
-import { useClients } from "../hooks/useClients";
+import { useSaleDetails } from "../hooks/useSaleDetails";
+import { useCategories } from "../hooks/useCategories";
 
-const Debts = () => {
-  const [currentClient, setCurrentClient] = useState("");
+// components
+import ProductSold from "./ProductSold";
 
-  const queryDebts = useDebts();
-  const queryClients = useClients();
+const ProductsSold = () => {
+  const [currentCategory, setCurrentCategory] = useState("");
+  const {
+    query: querySaleDetails,
+    // setRangeDateFilter: setRangeDateFilterSaleDetail,
+  } = useSaleDetails({ all: true });
 
-  const debtList = queryDebts?.data?.map((debt) => {
-    return <Debt key={debt?._id + debt?.createdAt} debt={debt} />;
+  const queryCategories = useCategories();
+
+  const categories = queryCategories?.data;
+
+  const saleDetails = querySaleDetails?.data?.filter(
+    (saleDetail) => saleDetail?.product?.category === currentCategory
+  );
+
+  const productSoldList = saleDetails?.map((saleDetail) => {
+    return <ProductSold key={saleDetail._id} saleDetail={saleDetail} />;
   });
 
-  const totalAmountByClient = queryDebts?.data
-    ?.map((debt) => {
-      if (debt.client._id === currentClient) {
-        return debt?.initialAmount - debt?.deliveredAmount;
-      }
-      return 0;
-    })
+  const totalAmount = saleDetails
+    ?.map((saleDetail) => saleDetail.subtotal)
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2);
 
-  const totalAmountDebts = queryDebts?.data
-    ?.map((debt) => debt?.initialAmount - debt?.deliveredAmount)
-    ?.reduce((acc, currentValue) => acc + currentValue, 0)
-    .toFixed(2);
-
-  const handleSelectClients = (option) => {
-    setCurrentClient(option?.value ? option?.value : "");
+  const handleSelectCategories = (option) => {
+    setCurrentCategory(option?.value ? option?.value : "");
   };
 
-  const clientsOptions = queryClients?.data?.map((client) => {
+  const categoriesOptions = categories?.map((client) => {
     return { label: client.name, value: client._id };
   });
 
   return (
     <>
-      {queryDebts?.isLoading && (
+      {querySaleDetails?.isLoading && (
         <Card variant="outline" mt={5}>
           <CardBody>
             <Stack>
@@ -66,19 +67,19 @@ const Debts = () => {
           </CardBody>
         </Card>
       )}
-      {!queryDebts.isLoading && (
+      {!querySaleDetails.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Flex direction={"column"}>
               <Text>Total</Text>
-              {currentClient === "" && (
+              {currentCategory === "" && (
                 <Text fontSize={"2xl"} as="b">
-                  {totalAmountDebts && currentClient === ""
+                  {totalAmount && currentCategory === ""
                     ? new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
                         currency: "USD",
-                      }).format(totalAmountDebts)
+                      }).format(totalAmount)
                     : new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
@@ -86,14 +87,14 @@ const Debts = () => {
                       }).format(0)}
                 </Text>
               )}
-              {currentClient !== "" && (
+              {currentCategory !== "" && (
                 <Text fontSize={"2xl"} as="b">
-                  {totalAmountByClient && currentClient !== ""
+                  {totalAmount && currentCategory !== ""
                     ? new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
                         currency: "USD",
-                      }).format(totalAmountByClient)
+                      }).format(totalAmount)
                     : new Intl.NumberFormat("en-US", {
                         style: "currency",
                         minimumFractionDigits: 2,
@@ -109,21 +110,22 @@ const Debts = () => {
         <CardBody>
           <Flex>
             <FormControl>
-              {/* <FormLabel>Filtrar por cliente:</FormLabel> */}
+              <FormLabel htmlFor="category">Filtrar por categoria:</FormLabel>
               <Select
-                options={clientsOptions}
-                onChange={handleSelectClients}
-                noOptionsMessage={() => "No hay clientes"}
+                options={categoriesOptions}
+                onChange={handleSelectCategories}
+                noOptionsMessage={() => "No hay categorias"}
                 isClearable={true}
-                name="client"
-                placeholder="Filtrar por cliente ..."
+                name="category"
+                id="category"
+                placeholder="Libros, etc ..."
               />
             </FormControl>
           </Flex>
         </CardBody>
       </Card>
 
-      {queryDebts?.isLoading && (
+      {querySaleDetails?.isLoading && (
         <>
           <Card variant="outline" mb={3}>
             <CardBody>
@@ -173,15 +175,15 @@ const Debts = () => {
         </>
       )}
 
-      {debtList?.length > 0 && !queryDebts?.isLoading && (
-        <Grid>{debtList}</Grid>
+      {productSoldList?.length > 0 && !querySaleDetails?.isLoading && (
+        <Grid>{productSoldList}</Grid>
       )}
-      {debtList?.length === 0 && !queryDebts?.isLoading && (
+      {productSoldList?.length === 0 && !querySaleDetails?.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Alert colorScheme="purple" status="success">
               <AlertIcon />
-              Tus clientes están al día.
+              No se encontró resultados.
             </Alert>
           </CardBody>
         </Card>
@@ -190,4 +192,4 @@ const Debts = () => {
   );
 };
 
-export default Debts;
+export default ProductsSold;

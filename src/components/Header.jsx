@@ -346,6 +346,11 @@ const NAV_ITEMS = [
     href: "/reports",
     // profiles: ["System Administrator", "Seller"],
   },
+  {
+    label: "Productos vendidos",
+    href: "/products-sold",
+    // profiles: ["System Administrator", "Seller"],
+  },
 ];
 
 export default Header;
