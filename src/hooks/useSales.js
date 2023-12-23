@@ -6,8 +6,10 @@ import saleService from "../services/sale";
 
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
-export const useSales = () => {
+export const useSales = (props) => {
   const axiosPrivate = useAxiosPrivate();
+
+  const { all } = props;
 
   const filters = JSON.parse(window.localStorage.getItem("filters"));
 
@@ -24,7 +26,7 @@ export const useSales = () => {
     queryKey: [
       "sales",
       {
-        filters: filters ? { ...filters } : { ...rangeDateFilter },
+        filters: filters ? { ...filters, all } : { ...rangeDateFilter, all },
       },
     ],
     queryFn: async (key) => {

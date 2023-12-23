@@ -9,6 +9,8 @@ const saleService = {
       finalUrl = SALE_URL;
     }
 
+    finalUrl = finalUrl + `&all=${filters.all}`;
+
     const { data } = await axiosPrivate.get(finalUrl, {
       withCredentials: true,
     });

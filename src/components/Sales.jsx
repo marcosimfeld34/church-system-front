@@ -40,7 +40,7 @@ const Sales = () => {
   const [showFilters, setShowFilters] = useState(
     JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   );
-  const { query: querySales, setRangeDateFilter } = useSales();
+  const { query: querySales, setRangeDateFilter } = useSales({ all: false });
   const {
     query: querySaleDetails,
     setRangeDateFilter: setRangeDateFilterSaleDetail,

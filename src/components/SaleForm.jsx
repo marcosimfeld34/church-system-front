@@ -44,7 +44,7 @@ const SaleForm = () => {
 
   const queryProducts = useProducts();
   const queryClients = useClients();
-  const { query: querySales } = useSales();
+  const { query: querySales } = useSales({ all: false });
   const { query: querySaleDetails } = useSaleDetails({ all: false });
   const { query: queryDebts } = useDebts();
 

@@ -21,7 +21,7 @@ const DebtForm = () => {
   const navigate = useNavigate();
 
   const queryClients = useClients();
-  const { query: querySales } = useSales();
+  const { query: querySales } = useSales({ all: false });
   const queryDebts = useDebts();
 
   const { updateDebt } = useUpdateDebt();
