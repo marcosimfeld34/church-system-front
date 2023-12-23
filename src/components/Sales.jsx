@@ -268,13 +268,15 @@ const Sales = () => {
           colStart={{ base: 1, md: 1, lg: 4 }}
           justifySelf={"end"}
         >
-          <Button
-            display={{ base: "block" }}
-            variant={"ghost"}
-            onClick={() => handleToggle()}
-          >
-            {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
-          </Button>
+          {!querySales?.isLoading && (
+            <Button
+              display={{ base: "block" }}
+              variant={"ghost"}
+              onClick={() => handleToggle()}
+            >
+              {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+            </Button>
+          )}
         </GridItem>
         {showFilters && (
           <GridItem
