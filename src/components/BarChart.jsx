@@ -25,7 +25,7 @@ ChartJS.register(
 );
 
 const BarChart = () => {
-  const { query: querySales } = useSales();
+  const { query: querySales } = useSales({ all: true });
 
   let obj = {
     1: { total: 0 },
