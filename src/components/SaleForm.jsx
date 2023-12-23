@@ -19,6 +19,7 @@ import { useUpdateManySaleDetails } from "../hooks/useUpdateManySaleDetails";
 import { useUpdateDebt } from "../hooks/useUpdateDebt";
 import { useMessage } from "../hooks/useMessage";
 import { useLogout } from "../hooks/useLogout";
+import { useMethodPayments } from "../hooks/useMethodPayments";
 
 const SaleForm = () => {
   const { showMessage } = useMessage();
@@ -44,6 +45,7 @@ const SaleForm = () => {
 
   const queryProducts = useProducts();
   const queryClients = useClients();
+  const queryMethodPayments = useMethodPayments();
   const { query: querySales } = useSales({ all: false });
   const { query: querySaleDetails } = useSaleDetails({ all: false });
   const { query: queryDebts } = useDebts();
@@ -51,12 +53,12 @@ const SaleForm = () => {
   const { logout } = useLogout();
   const location = useLocation();
 
-  const onSubmit = async ({ client, isPaid, saleItems }) => {
+  const onSubmit = async ({ client, methodPayment, isPaid, saleItems }) => {
     let newSale = {
       client,
+      methodPayment,
       isPaid,
     };
-
     if (!saleId) {
       try {
         let productWithSalePrice = [];

@@ -342,6 +342,11 @@ const NAV_ITEMS = [
     // profiles: ["System Administrator", "Seller"],
   },
   {
+    label: "Métodos de pago",
+    href: "/methodPayments",
+    // profiles: ["System Administrator", "Seller"],
+  },
+  {
     label: "Gráficos",
     href: "/reports",
     // profiles: ["System Administrator", "Seller"],

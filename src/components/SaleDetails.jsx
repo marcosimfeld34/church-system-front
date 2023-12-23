@@ -194,6 +194,16 @@ const SaleDetails = () => {
                         {sale.createdBy.firstName} {sale.createdBy.lastName}
                       </Text>
                     </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Método de pago: </Text>
+                      <Text as="b" fontSize="lg">
+                        {sale.methodPayment.name}
+                      </Text>
+                    </Flex>
                   </GridItem>
                 </Grid>
               </CardBody>

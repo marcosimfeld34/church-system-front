@@ -37,11 +37,13 @@ const SaleFormAdd = (props) => {
 
   const products = queryClient.getQueryData(["products"]);
   const clients = queryClient.getQueryData(["clients"]);
+  const methodPayments = queryClient.getQueryData(["methodPayments"]);
 
   const toast = useToast();
 
   const SaleSchema = Yup.object().shape({
     client: Yup.string().required("Requerido"),
+    methodPayment: Yup.string().required("Requerido"),
     saleItems: Yup.array(
       Yup.object().shape({
         product: Yup.string().required("Requerido"),
@@ -59,6 +61,10 @@ const SaleFormAdd = (props) => {
           client?.name.toLowerCase().includes("consumidor")
         )[0]?._id || "",
       isPaid: true,
+      methodPayment:
+        methodPayments?.filter((methodPayment) =>
+          methodPayment?.name.toLowerCase().includes("efectivo")
+        )[0]?._id || "",
       isLoading: false,
       saleItems: [{ product: "", quantity: 1 }],
     },
@@ -129,6 +135,10 @@ const SaleFormAdd = (props) => {
     formik.setFieldValue("client", options?.value ? options?.value : "");
   };
 
+  const handleSelectMethodPayment = (options) => {
+    formik.setFieldValue("methodPayment", options?.value ? options?.value : "");
+  };
+
   const handleAddRow = () => {
     formik.setFieldValue("saleItems", [
       ...formik.values.saleItems,
@@ -156,6 +166,10 @@ const SaleFormAdd = (props) => {
 
   const clientsOptions = clients?.map((client) => {
     return { label: client.name, value: client._id };
+  });
+
+  const methodPaymentsOptions = methodPayments?.map((methodPayment) => {
+    return { label: methodPayment.name, value: methodPayment._id };
   });
 
   return (
@@ -202,6 +216,48 @@ const SaleFormAdd = (props) => {
                           {formik.errors.client}
                         </FormErrorMessage>
                       )}
+                    </FormControl>
+                  </GridItem>
+                </Grid>
+                <Grid mb={4}>
+                  <GridItem>
+                    <FormControl
+                      isInvalid={
+                        formik.errors.methodPayment &&
+                        formik.touched.methodPayment
+                      }
+                    >
+                      <FormLabel htmlFor="methodPayment">
+                        Método de pago:
+                      </FormLabel>
+                      <Select
+                        value={methodPaymentsOptions?.filter(
+                          (methodPayment) =>
+                            methodPayment.value === formik.values.methodPayment
+                        )}
+                        options={methodPaymentsOptions}
+                        onChange={handleSelectMethodPayment}
+                        onBlur={(isTouched) =>
+                          formik.setFieldTouched("methodPayment", isTouched)
+                        }
+                        name="methodPayment"
+                        id="methodPayment"
+                        isClearable={true}
+                        placeholder="Buscar método de pago"
+                        noOptionsMessage={() => "No hay métodos de pago"}
+                        isDisabled={formik.values.isLoading}
+                        isInvalid={
+                          formik.errors.methodPayment &&
+                          formik.touched.methodPayment
+                        }
+                        required
+                      />
+                      {formik.errors.methodPayment &&
+                        formik.touched.methodPayment && (
+                          <FormErrorMessage>
+                            {formik.errors.methodPayment}
+                          </FormErrorMessage>
+                        )}
                     </FormControl>
                   </GridItem>
                 </Grid>

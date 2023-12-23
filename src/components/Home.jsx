@@ -31,6 +31,8 @@ import Categories from "./Categories";
 import CategoryForm from "./CategoryForm";
 import ClientForm from "./ClientForm";
 import Clients from "./Clients";
+import MethodPayments from "./MethodPayments";
+import MethodPaymentForm from "./MethodPaymentForm";
 import Debts from "./Debts";
 import DebtForm from "./DebtForm";
 import BarChart from "./BarChart";
@@ -102,51 +104,69 @@ const Home = () => {
             </Grid>
           }
         />
-        <>
-          <Route path="/products/add" element={<ProductForm />} />
-          <Route path="/products/:productId/edit" element={<ProductForm />} />
-          <Route
-            path="/products/:productId/details"
-            element={<ProductDetails />}
-          />
-          <Route
-            path="/categories"
-            element={
-              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-                <GridItem
-                  as="main"
-                  colSpan={{ base: 10, md: 10, lg: 8 }}
-                  colStart={{ base: 2, md: 2, lg: 3 }}
-                  mb={10}
-                >
-                  <Categories />
-                </GridItem>
-              </Grid>
-            }
-          />
-          <Route path="/categories/add" element={<CategoryForm />} />
-          <Route
-            path="/categories/:categoryId/edit"
-            element={<CategoryForm />}
-          />
-          <Route
-            path="/clients"
-            element={
-              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-                <GridItem
-                  as="main"
-                  colSpan={{ base: 10, md: 10, lg: 8 }}
-                  colStart={{ base: 2, md: 2, lg: 3 }}
-                  mb={10}
-                >
-                  <Clients />
-                </GridItem>
-              </Grid>
-            }
-          />
-          <Route path="/clients/add" element={<ClientForm />} />
-          <Route path="/clients/:clientId/edit" element={<ClientForm />} />
-        </>
+
+        <Route path="/products/add" element={<ProductForm />} />
+        <Route path="/products/:productId/edit" element={<ProductForm />} />
+        <Route
+          path="/products/:productId/details"
+          element={<ProductDetails />}
+        />
+        <Route
+          path="/categories"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Categories />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/categories/add" element={<CategoryForm />} />
+        <Route path="/categories/:categoryId/edit" element={<CategoryForm />} />
+        <Route
+          path="/clients"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Clients />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/clients/add" element={<ClientForm />} />
+        <Route path="/clients/:clientId/edit" element={<ClientForm />} />
+
+        <Route
+          path="/methodPayments"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <MethodPayments />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/methodPayments/add" element={<MethodPaymentForm />} />
+        <Route
+          path="/methodPayments/:methodPaymentId/edit"
+          element={<MethodPaymentForm />}
+        />
+
         <Route
           path="/"
           element={

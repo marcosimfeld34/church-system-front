@@ -44,9 +44,11 @@ const SaleFormEdit = (props) => {
 
   const products = queryClient.getQueryData(["products"]);
   const clients = queryClient.getQueryData(["clients"]);
+  const methodPayments = queryClient.getQueryData(["methodPayments"]);
 
   const SaleSchema = Yup.object().shape({
     client: Yup.string().required("Requerido"),
+    methodPayment: Yup.string().required("Requerido"),
     saleItems: Yup.array(
       Yup.object().shape({
         product: Yup.string().required("Requerido"),
@@ -77,6 +79,7 @@ const SaleFormEdit = (props) => {
   const formik = useFormik({
     initialValues: {
       client: saleToUpdate?.client?._id || "",
+      methodPayment: saleToUpdate?.methodPayment?._id || "",
       isPaid: saleToUpdate !== undefined ? saleToUpdate?.isPaid : false,
       isLoading: false,
       saleItems: saleItemInitial,
@@ -154,6 +157,10 @@ const SaleFormEdit = (props) => {
 
   const handleSelectClient = (options) => {
     formik.setFieldValue("client", options?.value ? options?.value : "");
+  };
+
+  const handleSelectMethodPayment = (options) => {
+    formik.setFieldValue("methodPayment", options?.value ? options?.value : "");
   };
 
   const handleAddRow = () => {
@@ -239,6 +246,10 @@ const SaleFormEdit = (props) => {
     return { label: client.name, value: client._id };
   });
 
+  const methodPaymentsOptions = methodPayments?.map((methodPayment) => {
+    return { label: methodPayment.name, value: methodPayment._id };
+  });
+
   return (
     <Grid templateColumns={{ base: "repeat(12, 1fr)" }} mt={5} mb={10}>
       <GridItem
@@ -280,6 +291,49 @@ const SaleFormEdit = (props) => {
                         {formik.errors.client}
                       </FormErrorMessage>
                     )}
+                  </FormControl>
+                </GridItem>
+              </Grid>
+
+              <Grid mb={4}>
+                <GridItem>
+                  <FormControl
+                    isInvalid={
+                      formik.errors.methodPayment &&
+                      formik.touched.methodPayment
+                    }
+                  >
+                    <FormLabel htmlFor="methodPayment">
+                      Método de pago:
+                    </FormLabel>
+                    <Select
+                      value={methodPaymentsOptions?.filter(
+                        (methodPayment) =>
+                          methodPayment.value === formik.values.methodPayment
+                      )}
+                      options={methodPaymentsOptions}
+                      onChange={handleSelectMethodPayment}
+                      onBlur={(isTouched) =>
+                        formik.setFieldTouched("methodPayment", isTouched)
+                      }
+                      name="methodPayment"
+                      id="methodPayment"
+                      isClearable={true}
+                      placeholder="Buscar método de pago"
+                      noOptionsMessage={() => "No hay métodos de pago"}
+                      isDisabled={formik.values.isLoading}
+                      isInvalid={
+                        formik.errors.methodPayment &&
+                        formik.touched.methodPayment
+                      }
+                      required
+                    />
+                    {formik.errors.methodPayment &&
+                      formik.touched.methodPayment && (
+                        <FormErrorMessage>
+                          {formik.errors.methodPayment}
+                        </FormErrorMessage>
+                      )}
                   </FormControl>
                 </GridItem>
               </Grid>

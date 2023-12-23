@@ -1,41 +1,41 @@
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 // components
-import ClientFormAdd from "./ClientFormAdd";
-import ClientFormEdit from "./ClientFormEdit";
+import MethodPaymentFormAdd from "./MethodPaymentFormAdd";
+import MethodPaymentFormEdit from "./MethodPaymentFormEdit";
 
 // custom hooks
-import { useClients } from "../hooks/useClients";
-import { useNewClient } from "../hooks/useNewClient";
-import { useEditClient } from "../hooks/useEditClient";
+import { useMethodPayments } from "../hooks/useMethodPayments";
+import { useNewMethodPayment } from "../hooks/useNewMethodPayment";
+import { useEditMethodPayment } from "../hooks/useEditMethodPayment";
 import { useLogout } from "../hooks/useLogout";
 import { useMessage } from "../hooks/useMessage";
 
-const ClientForm = () => {
+const MethodPaymentForm = () => {
   const { showMessage } = useMessage();
 
-  const { clientId } = useParams();
+  const { methodPaymentId } = useParams();
 
   const navigate = useNavigate();
   const { logout } = useLogout();
   const location = useLocation();
 
-  const queryClients = useClients();
-  const { addNewClient } = useNewClient();
-  const { editClient } = useEditClient();
+  const queryMethodPayments = useMethodPayments();
+  const { addNewMethodPayment } = useNewMethodPayment();
+  const { editMethodPayment } = useEditMethodPayment();
 
   const onSubmit = async ({ name }) => {
-    let newClient = {
+    let newMethodPayment = {
       name,
     };
 
-    if (!clientId) {
+    if (!methodPaymentId) {
       try {
-        await addNewClient(newClient);
+        await addNewMethodPayment(newMethodPayment);
 
-        showMessage("Cliente creado.", "success", "purple");
+        showMessage("Método de pago creado.", "success", "purple");
 
-        navigate("/clients");
+        navigate("/methodPayments");
       } catch (error) {
         if (error?.response?.status === 403) {
           logout().then((res) => {
@@ -50,18 +50,23 @@ const ClientForm = () => {
         }
       }
     } else {
-      let clientUpdated = {
-        ...queryClients?.data?.find((c) => c._id === clientId),
+      let methodPaymentUpdated = {
+        ...queryMethodPayments?.data?.find(
+          (method) => method._id === methodPaymentId
+        ),
       };
 
-      clientUpdated.name = name;
+      methodPaymentUpdated.name = name;
 
       try {
-        await editClient({ clientId, clientToUpdate: clientUpdated });
+        await editMethodPayment({
+          methodPaymentId,
+          methodPaymentToUpdate: methodPaymentUpdated,
+        });
 
-        showMessage("Cliente actualizado.", "success", "purple");
+        showMessage("Método de pago actualizado.", "success", "purple");
 
-        navigate("/clients");
+        navigate("/methodPayments");
       } catch (error) {
         if (error?.response?.status === 403) {
           logout().then((res) => {
@@ -78,22 +83,24 @@ const ClientForm = () => {
   };
 
   const onCancelOperation = () => {
-    navigate("/clients");
+    navigate("/methodPayments");
   };
 
   return (
     <>
-      {clientId && (
-        <ClientFormEdit
+      {methodPaymentId && (
+        <MethodPaymentFormEdit
           onSubmit={onSubmit}
           onCancelOperation={onCancelOperation}
-          clientToUpdate={{
-            ...queryClients?.data?.find((c) => c._id === clientId),
+          methodPaymentToUpdate={{
+            ...queryMethodPayments?.data?.find(
+              (method) => method._id === methodPaymentId
+            ),
           }}
         />
       )}
-      {!clientId && (
-        <ClientFormAdd
+      {!methodPaymentId && (
+        <MethodPaymentFormAdd
           onSubmit={onSubmit}
           onCancelOperation={onCancelOperation}
         />
@@ -102,4 +109,4 @@ const ClientForm = () => {
   );
 };
 
-export default ClientForm;
+export default MethodPaymentForm;
