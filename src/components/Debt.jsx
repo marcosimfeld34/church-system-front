@@ -42,7 +42,7 @@ const Debt = ({ debt }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const querySaleDetails = useSaleDetails();
+  const querySaleDetails = useSaleDetails({ all: false });
 
   const saleDetailsToDelete = querySaleDetails?.data?.filter(
     (saleDetail) => saleDetail.sale === debt?.sale?._id
