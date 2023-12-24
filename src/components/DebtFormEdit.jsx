@@ -27,26 +27,31 @@ const DebtFormEdit = (props) => {
     deliveredAmount: Yup.number().required("Requerido"),
   });
 
-  const { handleSubmit, values, handleChange, errors, touched, setFieldValue } =
-    useFormik({
-      initialValues: {
-        client: debtToUpdate?.client?._id || "",
-        isLoading: false,
-        sale: debtToUpdate?.sale?._id || "",
-        initialAmount: debtToUpdate?.initialAmount || "",
-        deliveredAmount:
-          debtToUpdate?.deliveredAmount > 0 ? debtToUpdate?.deliveredAmount : 0,
-      },
-      validationSchema: DebtSchema,
-      enableReinitialize: true,
-      onSubmit: (values) => {
-        setFieldValue("isLoading", true);
-        onSubmit(values);
-      },
-    });
+  const formik = useFormik({
+    initialValues: {
+      client: debtToUpdate?.client?._id || "",
+      isLoading: false,
+      sale: debtToUpdate?.sale?._id || "",
+      initialAmount: debtToUpdate?.initialAmount || "",
+      deliveredAmount:
+        debtToUpdate?.deliveredAmount > 0 ? debtToUpdate?.deliveredAmount : 0,
+    },
+    validationSchema: DebtSchema,
+    enableReinitialize: true,
+
+    onSubmit: async (values) => {
+      formik.setFieldValue("isLoading", true);
+
+      const error = await onSubmit(values);
+
+      if (!error) {
+        formik.setFieldValue("isLoading", false);
+      }
+    },
+  });
 
   const handleSelectClients = ({ value }) => {
-    setFieldValue("client", value);
+    formik.setFieldValue("client", value);
   };
 
   const clientsOptions = clients?.map((client) => {
@@ -54,7 +59,7 @@ const DebtFormEdit = (props) => {
   });
 
   const handleSelectSales = ({ value }) => {
-    setFieldValue("sale", value);
+    formik.setFieldValue("sale", value);
   };
 
   const salesOptions = sales?.map((sale) => {
@@ -70,89 +75,95 @@ const DebtFormEdit = (props) => {
               <Heading mb={3} textAlign="center" size="lg">
                 Modificar deuda:
               </Heading>
-              <form noValidate onSubmit={handleSubmit}>
+              <form noValidate onSubmit={formik.handleSubmit}>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.client}>
+                    <FormControl isInvalid={formik.errors.client}>
                       <FormLabel>Cliente:</FormLabel>
                       <Select
                         options={clientsOptions}
                         onChange={handleSelectClients}
                         noOptionsMessage={() => "No hay clientes"}
                         value={clientsOptions?.filter(
-                          (client) => client.value === values.client
+                          (client) => client.value === formik.values.client
                         )}
                         name="client"
                         // isDisabled={true}
                         placeholder="Buscar cliente ..."
-                        isInvalid={errors.client && touched.client}
-                        required
-                      />
-                      <FormErrorMessage>{errors.client}</FormErrorMessage>
-                    </FormControl>
-                  </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
-                    <FormControl isInvalid={errors.sale}>
-                      <FormLabel>Venta:</FormLabel>
-                      <Select
-                        options={salesOptions}
-                        onChange={handleSelectSales}
-                        noOptionsMessage={() => "No hay ventas"}
-                        value={salesOptions?.filter(
-                          (sale) => sale.value === values.sale
-                        )}
-                        name="sale"
-                        isDisabled={true}
-                        placeholder="Buscar venta ..."
-                        isInvalid={errors.sale && touched.sale}
-                        required
-                      />
-                      <FormErrorMessage>{errors.sale}</FormErrorMessage>
-                    </FormControl>
-                  </GridItem>
-                </Grid>
-                <Grid mb={4}>
-                  <GridItem>
-                    <FormControl isInvalid={errors.initialAmount}>
-                      <FormLabel>Monto de deuda</FormLabel>
-                      <Input
-                        name="initialAmount"
-                        type="number"
-                        value={values.initialAmount}
-                        onChange={handleChange}
-                        placeholder="Monto deuda"
-                        isDisabled={true}
                         isInvalid={
-                          errors.initialAmount && touched.initialAmount
+                          formik.errors.client && formik.touched.client
                         }
                         required
                       />
                       <FormErrorMessage>
-                        {errors.initialAmount}
+                        {formik.errors.client}
                       </FormErrorMessage>
                     </FormControl>
                   </GridItem>
                 </Grid>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl isInvalid={errors.deliveredAmount}>
-                      <FormLabel>Monto saldado</FormLabel>
+                    <FormControl isInvalid={formik.errors.sale}>
+                      <FormLabel>Venta:</FormLabel>
+                      <Select
+                        options={salesOptions}
+                        onChange={handleSelectSales}
+                        noOptionsMessage={() => "No hay ventas"}
+                        value={salesOptions?.filter(
+                          (sale) => sale.value === formik.values.sale
+                        )}
+                        name="sale"
+                        isDisabled={true}
+                        placeholder="Buscar venta ..."
+                        isInvalid={formik.errors.sale && formik.touched.sale}
+                        required
+                      />
+                      <FormErrorMessage>{formik.errors.sale}</FormErrorMessage>
+                    </FormControl>
+                  </GridItem>
+                </Grid>
+                <Grid mb={4}>
+                  <GridItem>
+                    <FormControl isInvalid={formik.errors.initialAmount}>
+                      <FormLabel>Monto de deuda</FormLabel>
                       <Input
-                        name="deliveredAmount"
+                        name="initialAmount"
                         type="number"
-                        value={values.deliveredAmount}
-                        isDisabled={values.isLoading}
-                        onChange={handleChange}
-                        placeholder="Monto saldado"
+                        value={formik.values.initialAmount}
+                        onChange={formik.handleChange}
+                        placeholder="Monto deuda"
+                        isDisabled={true}
                         isInvalid={
-                          errors.deliveredAmount && touched.deliveredAmount
+                          formik.errors.initialAmount &&
+                          formik.touched.initialAmount
                         }
                         required
                       />
                       <FormErrorMessage>
-                        {errors.deliveredAmount}
+                        {formik.errors.initialAmount}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </GridItem>
+                </Grid>
+                <Grid mb={4}>
+                  <GridItem>
+                    <FormControl isInvalid={formik.errors.deliveredAmount}>
+                      <FormLabel>Monto saldado</FormLabel>
+                      <Input
+                        name="deliveredAmount"
+                        type="number"
+                        value={formik.values.deliveredAmount}
+                        isDisabled={formik.values.isLoading}
+                        onChange={formik.handleChange}
+                        placeholder="Monto saldado"
+                        isInvalid={
+                          formik.errors.deliveredAmount &&
+                          formik.touched.deliveredAmount
+                        }
+                        required
+                      />
+                      <FormErrorMessage>
+                        {formik.errors.deliveredAmount}
                       </FormErrorMessage>
                     </FormControl>
                   </GridItem>
@@ -164,7 +175,7 @@ const DebtFormEdit = (props) => {
                   justifyContent={"end"}
                 >
                   <Button
-                    isLoading={values.isLoading}
+                    isLoading={formik.values.isLoading}
                     type="submit"
                     colorScheme="purple"
                     variant="solid"

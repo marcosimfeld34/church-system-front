@@ -32,6 +32,7 @@ import { useState } from "react";
 import { useSaleDetails } from "../hooks/useSaleDetails";
 import { usePayDebt } from "../hooks/usePayDebt";
 import { useDeleteSale } from "../hooks/useDeleteSale";
+import { useMessage } from "../hooks/useMessage";
 
 const Debt = ({ debt }) => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const Debt = ({ debt }) => {
   const { payDebt } = usePayDebt();
 
   const { deleteSale } = useDeleteSale();
+  const { showMessage } = useMessage();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,7 +51,16 @@ const Debt = ({ debt }) => {
   );
 
   const handlePaidTotal = async () => {
-    await payDebt({ debtToUpdate: debt });
+    const response = await payDebt({ debtToUpdate: debt });
+    if (response?.isUpdated) {
+      showMessage("Deuda pagada.", "success", "purple");
+      setIsLoading(false);
+    }
+
+    if (!response?.isUpdated) {
+      showMessage("No se pudo actualizar", "error", "red");
+      setIsLoading(false);
+    }
   };
 
   const handleEdit = () => {

@@ -1,6 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
-
-import { useToast } from "@chakra-ui/react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 // components
 import DebtFormAdd from "./DebtFormAdd";
@@ -12,16 +10,21 @@ import { useSales } from "../hooks/useSales";
 import { useDebts } from "../hooks/useDebts";
 import { useUpdateDebt } from "../hooks/useUpdateDebt";
 import { useUpdateSale } from "../hooks/useUpdateSale";
+import { useLogout } from "../hooks/useLogout";
+import { useMessage } from "../hooks/useMessage";
 
 const DebtForm = () => {
-  const toast = useToast();
+  const { showMessage } = useMessage();
 
   const { debtId } = useParams();
 
   const navigate = useNavigate();
 
+  const { logout } = useLogout();
+  const location = useLocation();
+
   const queryClients = useClients();
-  const { query: querySales } = useSales({ all: false });
+  const { query: querySales } = useSales({ all: true });
   const queryDebts = useDebts();
 
   const { updateDebt } = useUpdateDebt();
@@ -70,29 +73,26 @@ const DebtForm = () => {
           debtUpdated.isPaid = true;
         }
 
-        await updateDebt({ debtId, debtToUpdate: debtUpdated });
-
-        toast({
-          position: "top",
-          title: "Deuda actualizada.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          colorScheme: "purple",
+        const response = await updateDebt({
+          debtId,
+          debtToUpdate: debtUpdated,
         });
 
-        navigate("/debts");
+        if (response?.isUpdated) {
+          showMessage("Deuda actualizada.", "success", "purple");
+          navigate("/debts");
+        }
       } catch (error) {
-        if (
-          error.response.data.status === 400 &&
-          error.response.data.message === "INVALID_TOKEN"
-        ) {
-          // logout
-        } else if (
-          error.response.data.status === 400 &&
-          error.response.data.message === "MISSING_FIELDS_REQUIRED"
-        ) {
-          console.log(error.response.data.message);
+        if (error?.response?.status === 403) {
+          logout().then((res) => {
+            if (res.loggedOut) {
+              showMessage("Venció la sesión", "error", "red");
+              navigate("/login", { state: { from: location }, replace: true });
+            }
+          });
+        } else if (error?.response?.status === 400) {
+          showMessage("Ocurrió un error", "error", "red");
+          return false;
         }
       }
     }

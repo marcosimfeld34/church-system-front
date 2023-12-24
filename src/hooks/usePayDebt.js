@@ -12,27 +12,25 @@ export const usePayDebt = () => {
 
   const { mutateAsync: payDebt } = useMutation({
     mutationFn: async ({ debtToUpdate }) => {
-      try {
-        let debtUpdated = {
-          ...debtToUpdate,
-        };
+      let debtUpdated = {
+        ...debtToUpdate,
+      };
 
-        debtUpdated.deliveredAmount = debtToUpdate.initialAmount;
+      debtUpdated.deliveredAmount = debtToUpdate.initialAmount;
 
-        let saleToUpdate = {
-          ...debtToUpdate.sale,
-        };
-        saleToUpdate.isPaid = true;
-        await saleService.update(saleToUpdate._id, saleToUpdate, axiosPrivate);
+      let saleToUpdate = {
+        ...debtToUpdate.sale,
+      };
+      saleToUpdate.isPaid = true;
+      await saleService.update(saleToUpdate._id, saleToUpdate, axiosPrivate);
 
-        debtUpdated.isPaid = true;
+      debtUpdated.isPaid = true;
 
-        await debtService.update(debtUpdated._id, debtUpdated, axiosPrivate);
-
-        queryClient.invalidateQueries({ queryKey: ["debts"] });
-      } catch (error) {
-        console.log(error);
-      }
+      return await debtService.update(
+        debtUpdated._id,
+        debtUpdated,
+        axiosPrivate
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries(["debts"]);
