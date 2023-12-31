@@ -48,7 +48,7 @@ const SaleForm = () => {
   const queryMethodPayments = useMethodPayments();
   const { query: querySales } = useSales({ all: false });
   const { query: querySaleDetails } = useSaleDetails({ all: false });
-  const { query: queryDebts } = useDebts();
+  const queryDebts = useDebts();
 
   const { logout } = useLogout();
   const location = useLocation();
