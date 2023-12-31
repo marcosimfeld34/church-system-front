@@ -325,14 +325,14 @@ const Sales = () => {
                         variant="solid"
                       >
                         <SearchIcon boxSize={3} me={2} />
-                        Buscar
+                        Filtrar
                       </Button>
                       <Button
                         onClick={() => handleResetFilters()}
                         colorScheme="gray"
                         variant="solid"
                       >
-                        Reiniciar
+                        Hoy
                       </Button>
                     </Stack>
                   </form>
