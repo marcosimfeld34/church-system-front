@@ -24,6 +24,7 @@ const Dashboard = ({ querySales, querySaleDetails }) => {
   const totalCostSold = useMemo(
     () =>
       saleDetails
+        ?.filter((saleDetail) => saleDetail.product !== null)
         ?.map(
           (saleDetail) => saleDetail?.product?.costPrice * saleDetail?.quantity
         )

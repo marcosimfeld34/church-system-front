@@ -17,15 +17,16 @@ export const useDeleteSale = () => {
       if (!saleId) {
         return await debtService.delete(debt._id, axiosPrivate);
       }
-
       const productsToUpdate = [];
       saleDetails?.forEach((saleDetail) => {
-        productsToUpdate.push(saleDetail.product);
+        if (saleDetail.product !== null) {
+          productsToUpdate.push(saleDetail.product);
+        }
       });
 
       saleDetails?.forEach((saleDetail) => {
-        productsToUpdate.forEach((productToUpdate) => {
-          if (saleDetail.product._id === productToUpdate._id) {
+        productsToUpdate?.forEach((productToUpdate) => {
+          if (saleDetail?.product._id === productToUpdate?._id) {
             productToUpdate.stock = productToUpdate.stock + saleDetail.quantity;
           }
         });
