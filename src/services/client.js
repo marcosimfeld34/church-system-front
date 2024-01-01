@@ -4,8 +4,8 @@ const clientService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
-    if (filters.month && filters.year) {
-      finalUrl = `${CLIENT_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.id) {
+      finalUrl = `${CLIENT_URL}?id=${filters.id}`;
     } else {
       finalUrl = CLIENT_URL;
     }

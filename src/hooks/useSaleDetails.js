@@ -5,17 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import saleDetailService from "../services/saleDetails";
 
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useTodayDate } from "./useTodayDate";
 
 export const useSaleDetails = (props) => {
   const axiosPrivate = useAxiosPrivate();
+  const today = useTodayDate();
 
   const { all } = props;
 
   const filters = JSON.parse(window.localStorage.getItem("filters"));
-
-  const today = `${new Date().getFullYear()}-${
-    new Date().getMonth() + 1
-  }-${new Date().getDate()}`;
 
   const [rangeDateFilter, setRangeDateFilter] = useState({
     startDate: today,

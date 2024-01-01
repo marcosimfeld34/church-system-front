@@ -4,8 +4,8 @@ const productService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
-    if (filters.month && filters.year) {
-      finalUrl = `${PRODUCT_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.id) {
+      finalUrl = `${PRODUCT_URL}?id=${filters.id}`;
     } else {
       finalUrl = PRODUCT_URL;
     }

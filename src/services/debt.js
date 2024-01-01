@@ -4,8 +4,8 @@ const debtService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
-    if (filters.month && filters.year) {
-      finalUrl = `${DEBT_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.id) {
+      finalUrl = `${DEBT_URL}?id=${filters.id}`;
     } else {
       finalUrl = DEBT_URL;
     }

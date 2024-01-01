@@ -21,21 +21,21 @@ import {
 
 // components
 import Header from "./Header";
-import Products from "./Products";
-import ProductForm from "./ProductForm";
-import ProductDetails from "./ProductDetails";
-import Sales from "./Sales";
-import SaleForm from "./SaleForm";
-import SaleDetails from "./SaleDetails";
-import Categories from "./Categories";
-import CategoryForm from "./CategoryForm";
-import ClientForm from "./ClientForm";
-import Clients from "./Clients";
-import MethodPayments from "./MethodPayments";
-import MethodPaymentForm from "./MethodPaymentForm";
-import Debts from "./Debts";
-import DebtForm from "./DebtForm";
-import BarChart from "./BarChart";
+import Products from "./products/Products";
+import ProductForm from "./products/ProductForm";
+import ProductDetails from "./products/ProductDetails";
+import Sales from "./sales/Sales";
+import SaleForm from "./sales/SaleForm";
+import SaleDetails from "./sales/SaleDetails";
+import Categories from "./categories/Categories";
+import CategoryForm from "./categories/CategoryForm";
+import ClientForm from "./clients/ClientForm";
+import Clients from "./clients/Clients";
+import MethodPayments from "./methodPayments/MethodPayments";
+import MethodPaymentForm from "./methodPayments/MethodPaymentForm";
+import Debts from "./debts/Debts";
+import DebtForm from "./debts/DebtForm";
+import BarChart from "./reports/BarChart";
 import ProductsSold from "./ProductsSold";
 import PageNotFound from "./PageNotFound";
 

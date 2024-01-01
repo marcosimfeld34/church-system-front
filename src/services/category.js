@@ -4,8 +4,8 @@ const categoryService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
-    if (filters.month && filters.year) {
-      finalUrl = `${CATEGORY_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.id) {
+      finalUrl = `${CATEGORY_URL}?id=${filters.id}`;
     } else {
       finalUrl = CATEGORY_URL;
     }

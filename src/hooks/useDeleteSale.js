@@ -14,36 +14,39 @@ export const useDeleteSale = () => {
 
   const { mutateAsync: deleteSale } = useMutation({
     mutationFn: async ({ saleId, saleDetails, debt }) => {
-      try {
-        const productsToUpdate = [];
-        saleDetails.forEach((saleDetail) => {
-          productsToUpdate.push(saleDetail.product);
-        });
+      if (!saleId) {
+        return await debtService.delete(debt._id, axiosPrivate);
+      }
 
-        saleDetails.forEach((saleDetail) => {
-          productsToUpdate.forEach((productToUpdate) => {
-            if (saleDetail.product._id === productToUpdate._id) {
-              productToUpdate.stock =
-                productToUpdate.stock + saleDetail.quantity;
-            }
-          });
-        });
+      const productsToUpdate = [];
+      saleDetails?.forEach((saleDetail) => {
+        productsToUpdate.push(saleDetail.product);
+      });
 
-        const uniqByKeepLast = (data, key) => {
-          return [...new Map(data.map((x) => [key(x), x])).values()];
-        };
-
-        let products = [];
-
+      saleDetails?.forEach((saleDetail) => {
         productsToUpdate.forEach((productToUpdate) => {
-          products.push({
-            id: productToUpdate._id,
-            stock: productToUpdate.stock,
-          });
+          if (saleDetail.product._id === productToUpdate._id) {
+            productToUpdate.stock = productToUpdate.stock + saleDetail.quantity;
+          }
         });
+      });
 
-        products = uniqByKeepLast(products, (it) => it.id);
+      const uniqByKeepLast = (data, key) => {
+        return [...new Map(data.map((x) => [key(x), x])).values()];
+      };
 
+      let products = [];
+
+      productsToUpdate.forEach((productToUpdate) => {
+        products.push({
+          id: productToUpdate._id,
+          stock: productToUpdate.stock,
+        });
+      });
+
+      products = uniqByKeepLast(products, (it) => it.id);
+
+      const deleteRest = async () => {
         const response = await saleService.delete(saleId, axiosPrivate);
 
         if (response.isDeleted) {
@@ -53,25 +56,28 @@ export const useDeleteSale = () => {
           );
 
           if (response.isDeleted) {
-            await productService.updateMany({ products }, axiosPrivate);
-
-            if (debt) {
-              await debtService.delete(debt._id, axiosPrivate);
-            }
-
-            return { isDeleted: true };
+            return await productService.updateMany({ products }, axiosPrivate);
           }
         }
-      } catch (error) {
-        console.log(error);
-        return { isDeleted: false };
+      };
+
+      if (debt) {
+        const response = await debtService.delete(debt._id, axiosPrivate);
+
+        if (response.isDeleted) {
+          return deleteRest();
+        }
       }
+
+      return deleteRest();
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["sales"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      queryClient.invalidateQueries({ queryKey: ["saleDetails"] });
-      queryClient.invalidateQueries({ queryKey: ["debts"] });
+    onSettled: (response) => {
+      if (response?.status === 200) {
+        queryClient.invalidateQueries({ queryKey: ["sales"] });
+        queryClient.invalidateQueries({ queryKey: ["products"] });
+        queryClient.invalidateQueries({ queryKey: ["saleDetails"] });
+        queryClient.invalidateQueries({ queryKey: ["debts"] });
+      }
     },
   });
 

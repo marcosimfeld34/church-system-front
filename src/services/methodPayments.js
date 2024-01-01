@@ -4,8 +4,8 @@ const methodPaymentService = {
   getAll: async (filters, axiosPrivate) => {
     let finalUrl;
 
-    if (filters.month && filters.year) {
-      finalUrl = `${METHOD_PAYMENT_URL}?month=${filters.month}&year=${filters.year}`;
+    if (filters.id) {
+      finalUrl = `${METHOD_PAYMENT_URL}?id=${filters.id}`;
     } else {
       finalUrl = METHOD_PAYMENT_URL;
     }

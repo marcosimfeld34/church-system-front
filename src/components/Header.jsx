@@ -329,32 +329,26 @@ const NAV_ITEMS = [
   {
     label: "Productos",
     href: "/products",
-    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Categorias",
     href: "/categories",
-    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Clientes",
     href: "/clients",
-    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Métodos de pago",
     href: "/methodPayments",
-    // profiles: ["System Administrator", "Seller"],
   },
-  {
-    label: "Gráficos",
-    href: "/reports",
-    // profiles: ["System Administrator", "Seller"],
-  },
+  // {
+  //   label: "Gráficos",
+  //   href: "/reports",
+  // },
   {
     label: "Productos vendidos",
     href: "/products-sold",
-    // profiles: ["System Administrator", "Seller"],
   },
 ];
 
