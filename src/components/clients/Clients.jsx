@@ -13,34 +13,24 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // components
 import Client from "./Client";
 
 // custom hooks
 import { useClients } from "../../hooks/useClients";
-import { useLogout } from "../../hooks/useLogout";
-import { useMessage } from "../../hooks/useMessage";
+import { useError } from "../../hooks/useError";
 
 const Clients = () => {
   const queryClients = useClients();
 
-  const { logout } = useLogout();
-  const { showMessage } = useMessage();
-
-  const location = useLocation();
+  const { throwError } = useError();
 
   const navigate = useNavigate();
 
-  if (queryClients?.isError && queryClients?.error?.response?.status === 403) {
-    logout().then((res) => {
-      if (res.loggedOut) {
-        showMessage("Venció la sesión", "success", "purple");
-
-        navigate("/login", { state: { from: location }, replace: true });
-      }
-    });
+  if (queryClients?.isError) {
+    throwError(queryClients?.error);
   }
 
   const handleAddClient = () => {
@@ -64,7 +54,7 @@ const Clients = () => {
           </CardBody>
         </Card>
       )}
-      {!queryClients?.isLoading && (
+      {!queryClients?.isError && !queryClients?.isLoading && (
         <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
           <CardBody>
             <Flex placeItems={"center"}>
@@ -149,19 +139,21 @@ const Clients = () => {
         </>
       )}
 
-      {queryClients?.data?.length > 0 && !queryClients?.isLoading && (
-        <Grid>{clientList}</Grid>
-      )}
-      {queryClients?.data?.length === 0 && !queryClients?.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Alert colorScheme="purple" status="success">
-              <AlertIcon />
-              No hay clientes cargados.
-            </Alert>
-          </CardBody>
-        </Card>
-      )}
+      {!queryClients?.isError &&
+        queryClients?.data?.length > 0 &&
+        !queryClients?.isLoading && <Grid>{clientList}</Grid>}
+      {!queryClients?.isError &&
+        queryClients?.data?.length === 0 &&
+        !queryClients?.isLoading && (
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Alert colorScheme="purple" status="success">
+                <AlertIcon />
+                No hay clientes cargados.
+              </Alert>
+            </CardBody>
+          </Card>
+        )}
     </>
   );
 };

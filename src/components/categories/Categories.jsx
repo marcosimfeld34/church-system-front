@@ -13,36 +13,24 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // components
 import Category from "./Category";
 
 // custom hooks
 import { useCategories } from "../../hooks/useCategories";
-import { useLogout } from "../../hooks/useLogout";
-import { useMessage } from "../../hooks/useMessage";
+import { useError } from "../../hooks/useError";
 
 const Categories = () => {
   const queryCategories = useCategories();
 
   const navigate = useNavigate();
-  const { showMessage } = useMessage();
 
-  const location = useLocation();
+  const { throwError } = useError();
 
-  const { logout } = useLogout();
-
-  if (
-    queryCategories?.isError &&
-    queryCategories?.error?.response?.status === 403
-  ) {
-    logout().then((res) => {
-      if (res.loggedOut) {
-        showMessage("Venció la sesión", "success", "purple");
-        navigate("/login", { state: { from: location }, replace: true });
-      }
-    });
+  if (queryCategories?.isError) {
+    throwError(queryCategories?.error);
   }
 
   const handleAddCategory = () => {
@@ -132,7 +120,7 @@ const Categories = () => {
 
   return (
     <>
-      {!queryCategories?.isLoading && (
+      {!queryCategories?.isError && !queryCategories?.isLoading && (
         <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
           <CardBody>
             <Flex placeItems={"center"}>
@@ -153,19 +141,21 @@ const Categories = () => {
         </Card>
       )}
 
-      {queryCategories?.data?.length > 0 && !queryCategories?.isLoading && (
-        <Grid>{categoryList}</Grid>
-      )}
-      {queryCategories?.data?.length === 0 && !queryCategories?.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Alert colorScheme="purple" status="success">
-              <AlertIcon />
-              No hay categorias cargadas.
-            </Alert>
-          </CardBody>
-        </Card>
-      )}
+      {!queryCategories?.isError &&
+        queryCategories?.data?.length > 0 &&
+        !queryCategories?.isLoading && <Grid>{categoryList}</Grid>}
+      {!queryCategories?.isError &&
+        queryCategories?.data?.length === 0 &&
+        !queryCategories?.isLoading && (
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Alert colorScheme="purple" status="success">
+                <AlertIcon />
+                No hay categorias cargadas.
+              </Alert>
+            </CardBody>
+          </Card>
+        )}
     </>
   );
 };

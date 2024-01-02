@@ -19,12 +19,19 @@ import Debt from "./Debt";
 // custom hooks
 import { useDebts } from "../../hooks/useDebts";
 import { useClients } from "../../hooks/useClients";
+import { useError } from "../../hooks/useError";
 
 const Debts = () => {
   const [currentClient, setCurrentClient] = useState("");
 
   const queryDebts = useDebts();
   const queryClients = useClients();
+
+  const { throwError } = useError();
+
+  if (queryDebts?.isError) {
+    throwError(queryDebts?.error);
+  }
 
   const debtList = queryDebts?.data
     ?.filter((debt) => !debt.isPaid)
@@ -58,7 +65,7 @@ const Debts = () => {
   return (
     <>
       {queryDebts?.isLoading && (
-        <Card variant="outline" mt={5}>
+        <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Stack>
               <Skeleton height="20px" />
@@ -68,62 +75,64 @@ const Debts = () => {
           </CardBody>
         </Card>
       )}
-      {!queryDebts.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Flex direction={"column"}>
-              <Text>Total</Text>
-              {currentClient === "" && (
-                <Text fontSize={"2xl"} as="b">
-                  {totalAmountDebts && currentClient === ""
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(totalAmountDebts)
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              )}
-              {currentClient !== "" && (
-                <Text fontSize={"2xl"} as="b">
-                  {totalAmountByClient && currentClient !== ""
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(totalAmountByClient)
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              )}
-            </Flex>
-          </CardBody>
-        </Card>
+      {!queryDebts?.isError && !queryDebts.isLoading && (
+        <>
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Flex direction={"column"}>
+                <Text>Total</Text>
+                {currentClient === "" && (
+                  <Text fontSize={"2xl"} as="b">
+                    {totalAmountDebts && currentClient === ""
+                      ? new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(totalAmountDebts)
+                      : new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
+                  </Text>
+                )}
+                {currentClient !== "" && (
+                  <Text fontSize={"2xl"} as="b">
+                    {totalAmountByClient && currentClient !== ""
+                      ? new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(totalAmountByClient)
+                      : new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
+                  </Text>
+                )}
+              </Flex>
+            </CardBody>
+          </Card>
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Flex>
+                <FormControl>
+                  {/* <FormLabel>Filtrar por cliente:</FormLabel> */}
+                  <Select
+                    options={clientsOptions}
+                    onChange={handleSelectClients}
+                    noOptionsMessage={() => "No hay clientes"}
+                    isClearable={true}
+                    name="client"
+                    placeholder="Filtrar por cliente ..."
+                  />
+                </FormControl>
+              </Flex>
+            </CardBody>
+          </Card>
+        </>
       )}
-      <Card variant="outline" mt={5} mb={3}>
-        <CardBody>
-          <Flex>
-            <FormControl>
-              {/* <FormLabel>Filtrar por cliente:</FormLabel> */}
-              <Select
-                options={clientsOptions}
-                onChange={handleSelectClients}
-                noOptionsMessage={() => "No hay clientes"}
-                isClearable={true}
-                name="client"
-                placeholder="Filtrar por cliente ..."
-              />
-            </FormControl>
-          </Flex>
-        </CardBody>
-      </Card>
 
       {queryDebts?.isLoading && (
         <>
@@ -175,19 +184,21 @@ const Debts = () => {
         </>
       )}
 
-      {debtList?.length > 0 && !queryDebts?.isLoading && (
-        <Grid>{debtList}</Grid>
-      )}
-      {debtList?.length === 0 && !queryDebts?.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Alert colorScheme="purple" status="success">
-              <AlertIcon />
-              Tus clientes están al día.
-            </Alert>
-          </CardBody>
-        </Card>
-      )}
+      {!queryDebts?.isError &&
+        debtList?.length > 0 &&
+        !queryDebts?.isLoading && <Grid>{debtList}</Grid>}
+      {!queryDebts?.isError &&
+        debtList?.length === 0 &&
+        !queryDebts?.isLoading && (
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Alert colorScheme="purple" status="success">
+                <AlertIcon />
+                Tus clientes están al día.
+              </Alert>
+            </CardBody>
+          </Card>
+        )}
     </>
   );
 };

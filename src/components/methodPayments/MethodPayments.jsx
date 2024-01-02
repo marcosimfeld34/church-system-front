@@ -13,37 +13,24 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // components
 import MethodPayment from "./MethodPayment";
 
 // custom hooks
 import { useMethodPayments } from "../../hooks/useMethodPayments";
-import { useLogout } from "../../hooks/useLogout";
-import { useMessage } from "../../hooks/useMessage";
+import { useError } from "../../hooks/useError";
 
 const MethodPayments = () => {
   const queryMethodPayments = useMethodPayments();
 
-  const { logout } = useLogout();
-  const { showMessage } = useMessage();
-
-  const location = useLocation();
+  const { throwError } = useError();
 
   const navigate = useNavigate();
 
-  if (
-    queryMethodPayments?.isError &&
-    queryMethodPayments?.error?.response?.status === 403
-  ) {
-    logout().then((res) => {
-      if (res.loggedOut) {
-        showMessage("Venció la sesión", "success", "purple");
-
-        navigate("/login", { state: { from: location }, replace: true });
-      }
-    });
+  if (queryMethodPayments?.isError) {
+    throwError(queryMethodPayments?.error);
   }
 
   const handleAddClient = () => {
@@ -72,7 +59,7 @@ const MethodPayments = () => {
           </CardBody>
         </Card>
       )}
-      {!queryMethodPayments?.isLoading && (
+      {!queryMethodPayments?.isError && !queryMethodPayments?.isLoading && (
         <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
           <CardBody>
             <Flex placeItems={"center"}>
@@ -157,9 +144,11 @@ const MethodPayments = () => {
         </>
       )}
 
-      {queryMethodPayments?.data?.length > 0 &&
+      {!queryMethodPayments?.isError &&
+        queryMethodPayments?.data?.length > 0 &&
         !queryMethodPayments?.isLoading && <Grid>{methodPaymentsList}</Grid>}
-      {queryMethodPayments?.data?.length === 0 &&
+      {!queryMethodPayments?.isError &&
+        queryMethodPayments?.data?.length === 0 &&
         !queryMethodPayments?.isLoading && (
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>

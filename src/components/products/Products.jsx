@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 // components
@@ -24,32 +24,19 @@ import Product from "./Product";
 
 // custom hooks
 import { useProducts } from "../../hooks/useProducts";
-import { useLogout } from "../../hooks/useLogout";
-import { useMessage } from "../../hooks/useMessage";
+import { useError } from "../../hooks/useError";
 
 const Products = () => {
   const [searchValue, setSearchValue] = useState("");
 
-  const { logout } = useLogout();
-
-  const { showMessage } = useMessage();
+  const { throwError } = useError();
 
   const navigate = useNavigate();
 
-  const location = useLocation();
-
   const queryProducts = useProducts();
 
-  if (
-    queryProducts?.isError &&
-    queryProducts?.error?.response?.status === 403
-  ) {
-    logout().then((res) => {
-      if (res.loggedOut) {
-        showMessage("Venció la sesión", "success", "purple");
-        navigate("/login", { state: { from: location }, replace: true });
-      }
-    });
+  if (queryProducts?.isError) {
+    throwError(queryProducts?.error);
   }
 
   const totalProductSales = queryProducts?.data
@@ -97,7 +84,7 @@ const Products = () => {
           </CardBody>
         </Card>
       )}
-      {!queryProducts?.isLoading && (
+      {!queryProducts?.isError && !queryProducts?.isLoading && (
         <Grid
           templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
           gap={2}
@@ -165,7 +152,7 @@ const Products = () => {
           </Card>
         </Grid>
       )}
-      {!queryProducts?.isLoading && (
+      {!queryProducts?.isError && !queryProducts?.isLoading && (
         <>
           <Card bgColor={"#373E68"} variant="outline" mt={5} mb={3}>
             <CardBody>
@@ -268,21 +255,25 @@ const Products = () => {
         </>
       )}
 
-      {queryProducts?.data?.length > 0 && !queryProducts?.isLoading && (
-        <Grid mt={5}>
-          <GridItem>{productList}</GridItem>
-        </Grid>
-      )}
-      {queryProducts?.data?.length === 0 && !queryProducts?.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Alert colorScheme="purple" status="success">
-              <AlertIcon />
-              No hay productos cargados.
-            </Alert>
-          </CardBody>
-        </Card>
-      )}
+      {!queryProducts?.isError &&
+        queryProducts?.data?.length > 0 &&
+        !queryProducts?.isLoading && (
+          <Grid mt={5}>
+            <GridItem>{productList}</GridItem>
+          </Grid>
+        )}
+      {!queryProducts?.isError &&
+        queryProducts?.data?.length === 0 &&
+        !queryProducts?.isLoading && (
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Alert colorScheme="purple" status="success">
+                <AlertIcon />
+                No hay productos cargados.
+              </Alert>
+            </CardBody>
+          </Card>
+        )}
     </>
   );
 };

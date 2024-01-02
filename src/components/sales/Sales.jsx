@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // formik
 import { useFormik } from "formik";
@@ -34,9 +34,8 @@ import Dashboard from "../reports/Dashboard";
 import { useSaleDetails } from "../../hooks/useSaleDetails";
 import { useDebts } from "../../hooks/useDebts";
 import { useSales } from "../../hooks/useSales";
-import { useLogout } from "../../hooks/useLogout";
-import { useMessage } from "../../hooks/useMessage";
 import { useTodayDate } from "../../hooks/useTodayDate";
+import { useError } from "../../hooks/useError";
 
 const Sales = () => {
   const [showFilters, setShowFilters] = useState(
@@ -49,12 +48,10 @@ const Sales = () => {
   } = useSaleDetails({ all: false });
 
   const queryDebts = useDebts();
-  const { showMessage } = useMessage();
 
-  const { logout } = useLogout();
+  const { throwError } = useError();
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleAddSale = () => {
     navigate("/add");
@@ -66,13 +63,8 @@ const Sales = () => {
 
   const debts = queryDebts?.data;
 
-  if (querySales?.isError && querySales?.error?.response?.status === 403) {
-    logout().then((res) => {
-      if (res.loggedOut) {
-        showMessage("Venció la sesión", "success", "purple");
-        navigate("/login", { state: { from: location }, replace: true });
-      }
-    });
+  if (querySales?.isError) {
+    throwError(querySales?.error);
   }
 
   const RangeDateFilterSchema = Yup.object().shape({
