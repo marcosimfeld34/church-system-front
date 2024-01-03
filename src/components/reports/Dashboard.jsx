@@ -1,25 +1,20 @@
 import {
   Grid,
+  GridItem,
   Card,
   CardBody,
-  Flex,
-  Text,
   Stack,
   Skeleton,
 } from "@chakra-ui/react";
 
 import { useMemo } from "react";
 
-// custom hooks
-// import { useSaleDetails } from "../hooks/useSaleDetails";
-// import { useSales } from "../hooks/useSales";
+import SimpleBoard from "./SimpleBoard";
 
-const Dashboard = ({ querySales, querySaleDetails }) => {
-  // const querySales = useSales();
-  // const querySaleDetails = useSaleDetails();
-
+const Dashboard = ({ querySales, querySaleDetails, queryProducts }) => {
   const saleDetails = querySaleDetails?.data;
   const sales = querySales?.data;
+  const products = queryProducts?.data;
 
   const totalCostSold = useMemo(
     () =>
@@ -46,9 +41,32 @@ const Dashboard = ({ querySales, querySaleDetails }) => {
     [totalSalesAmount, totalCostSold]
   );
 
+  const totalProductSales = useMemo(
+    () =>
+      products
+        ?.map((product) => product.salePrice * product.stock)
+        .reduce((acc, currentValue) => acc + currentValue, 0)
+        .toFixed(2),
+    [products]
+  );
+
+  const totalProductCost = useMemo(
+    () =>
+      products
+        ?.map((product) => product.costPrice * product.stock)
+        .reduce((acc, currentValue) => acc + currentValue, 0)
+        .toFixed(2),
+    [products]
+  );
+
+  const totalProductProfit = useMemo(
+    () => totalProductSales - totalProductCost,
+    [totalProductSales, totalProductCost]
+  );
+
   return (
     <>
-      {querySales.isLoading && (
+      {querySales?.isLoading && (
         <Grid
           templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
           gap={2}
@@ -84,80 +102,54 @@ const Dashboard = ({ querySales, querySaleDetails }) => {
           </Card>
         </Grid>
       )}
-      {!querySales?.isLoading && (
-        <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={2}
-          mt={5}
-        >
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Facturación total</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalSalesAmount
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(
-                        querySaleDetails?.data?.length > 0
-                          ? totalSalesAmount
-                          : 0
-                      )
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Costo total</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalCostSold
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(
-                        querySaleDetails?.data?.length > 0 ? totalCostSold : 0
-                      )
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Ganancia total</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalProfit
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(
-                        querySaleDetails?.data?.length > 0 ? totalProfit : 0
-                      )
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
+      {!querySales?.isLoading && !products && (
+        <Grid templateColumns={{ base: "repeat(12, 1fr)" }} gap={2} mt={5}>
+          <GridItem colSpan={{ base: 12, md: 4 }} colStart={{ base: 1, md: 1 }}>
+            <SimpleBoard
+              amount={totalSalesAmount}
+              size={querySaleDetails?.data}
+              title={"Facturación total"}
+            />
+          </GridItem>
+          <GridItem colSpan={{ base: 12, md: 4 }} colStart={{ base: 1, md: 5 }}>
+            <SimpleBoard
+              amount={totalCostSold}
+              size={querySaleDetails?.data}
+              title={"Costo total"}
+            />
+          </GridItem>
+          <GridItem colSpan={{ base: 12, md: 4 }} colStart={{ base: 1, md: 9 }}>
+            <SimpleBoard
+              amount={totalProfit}
+              size={querySaleDetails?.data}
+              title={"Ganancia total"}
+            />
+          </GridItem>
+        </Grid>
+      )}
+      {!queryProducts?.isLoading && products && (
+        <Grid templateColumns={{ base: "repeat(12, 1fr)" }} gap={2} mt={5}>
+          <GridItem colSpan={{ base: 12, md: 4 }} colStart={{ base: 1, md: 1 }}>
+            <SimpleBoard
+              amount={totalProductSales}
+              size={queryProducts?.data}
+              title={"Monto total en stock"}
+            />
+          </GridItem>
+          <GridItem colSpan={{ base: 12, md: 4 }} colStart={{ base: 1, md: 5 }}>
+            <SimpleBoard
+              amount={totalProductCost}
+              size={queryProducts?.data}
+              title={"Costo del stock"}
+            />
+          </GridItem>
+          <GridItem colSpan={{ base: 12, md: 4 }} colStart={{ base: 1, md: 9 }}>
+            <SimpleBoard
+              amount={totalProductProfit}
+              size={queryProducts?.data}
+              title={"Ganancia del stock"}
+            />
+          </GridItem>
         </Grid>
       )}
     </>

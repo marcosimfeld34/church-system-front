@@ -21,6 +21,7 @@ import { useState } from "react";
 
 // components
 import Product from "./Product";
+import Dashboard from "../reports/Dashboard";
 
 // custom hooks
 import { useProducts } from "../../hooks/useProducts";
@@ -38,18 +39,6 @@ const Products = () => {
   if (queryProducts?.isError) {
     throwError(queryProducts?.error);
   }
-
-  const totalProductSales = queryProducts?.data
-    ?.map((product) => product.salePrice * product.stock)
-    .reduce((acc, currentValue) => acc + currentValue, 0)
-    .toFixed(2);
-
-  const totalProductCost = queryProducts?.data
-    ?.map((product) => product.costPrice * product.stock)
-    .reduce((acc, currentValue) => acc + currentValue, 0)
-    .toFixed(2);
-
-  const totalProfit = totalProductSales - totalProductCost;
 
   const handleAddProduct = () => {
     navigate("add");
@@ -84,73 +73,9 @@ const Products = () => {
           </CardBody>
         </Card>
       )}
+
       {!queryProducts?.isError && !queryProducts?.isLoading && (
-        <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={2}
-          mt={5}
-        >
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Monto total en stock</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalProductSales
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(totalProductSales)
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Costo del stock</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalProductCost
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(totalProductCost)
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline">
-            <CardBody>
-              <Flex direction={"column"}>
-                <Text>Ganancia del stock</Text>
-                <Text fontSize={"2xl"} as="b">
-                  {totalProductCost
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(totalProfit)
-                    : new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        minimumFractionDigits: 2,
-                        currency: "USD",
-                      }).format(0)}
-                </Text>
-              </Flex>
-            </CardBody>
-          </Card>
-        </Grid>
+        <Dashboard queryProducts={queryProducts} />
       )}
       {!queryProducts?.isError && !queryProducts?.isLoading && (
         <>
