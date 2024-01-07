@@ -8,8 +8,6 @@ import {
   Stack,
   Skeleton,
   Text,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
@@ -17,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 // components
 import Client from "./Client";
+import WithoutResults from "../common/WithoutResults";
 
 // custom hooks
 import { useClients } from "../../hooks/useClients";
@@ -145,14 +144,7 @@ const Clients = () => {
       {!queryClients?.isError &&
         queryClients?.data?.length === 0 &&
         !queryClients?.isLoading && (
-          <Card variant="outline" mt={5} mb={3}>
-            <CardBody>
-              <Alert colorScheme="purple" status="success">
-                <AlertIcon />
-                No hay clientes cargados.
-              </Alert>
-            </CardBody>
-          </Card>
+          <WithoutResults text={"No hay clientes cargados."} />
         )}
     </>
   );

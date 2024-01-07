@@ -1,6 +1,6 @@
 import { Grid, GridItem, Card, CardBody, Text, Flex } from "@chakra-ui/react";
 
-const ProductSold = ({ saleDetail }) => {
+const HistorySale = ({ saleDetail }) => {
   return (
     <GridItem colSpan="5" mb={3}>
       <Card variant="outline">
@@ -47,4 +47,4 @@ const ProductSold = ({ saleDetail }) => {
   );
 };
 
-export default ProductSold;
+export default HistorySale;

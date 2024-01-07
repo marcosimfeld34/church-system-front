@@ -7,9 +7,7 @@ import {
   Spacer,
   Stack,
   Skeleton,
-  Alert,
   Text,
-  AlertIcon,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
@@ -17,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 // components
 import Category from "./Category";
+import WithoutResults from "../common/WithoutResults";
 
 // custom hooks
 import { useCategories } from "../../hooks/useCategories";
@@ -147,14 +146,7 @@ const Categories = () => {
       {!queryCategories?.isError &&
         queryCategories?.data?.length === 0 &&
         !queryCategories?.isLoading && (
-          <Card variant="outline" mt={5} mb={3}>
-            <CardBody>
-              <Alert colorScheme="purple" status="success">
-                <AlertIcon />
-                No hay categorias cargadas.
-              </Alert>
-            </CardBody>
-          </Card>
+          <WithoutResults text={"No hay categorias cargadas."} />
         )}
     </>
   );

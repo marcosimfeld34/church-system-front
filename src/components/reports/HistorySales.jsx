@@ -6,8 +6,6 @@ import {
   Stack,
   Skeleton,
   FormControl,
-  Alert,
-  AlertIcon,
   FormLabel,
   Text,
 } from "@chakra-ui/react";
@@ -16,13 +14,14 @@ import Select from "react-select";
 import { useState } from "react";
 
 // custom hooks
-import { useSaleDetails } from "../hooks/useSaleDetails";
-import { useCategories } from "../hooks/useCategories";
+import { useSaleDetails } from "../../hooks/useSaleDetails";
+import { useCategories } from "../../hooks/useCategories";
 
 // components
-import ProductSold from "./ProductSold";
+import HistorySale from "./HistorySale";
+import WithoutResults from "../common/WithoutResults";
 
-const ProductsSold = () => {
+const HistorySales = () => {
   const [currentCategory, setCurrentCategory] = useState("");
   const {
     query: querySaleDetails,
@@ -38,7 +37,7 @@ const ProductsSold = () => {
   );
 
   const productSoldList = saleDetails?.map((saleDetail) => {
-    return <ProductSold key={saleDetail._id} saleDetail={saleDetail} />;
+    return <HistorySale key={saleDetail._id} saleDetail={saleDetail} />;
   });
 
   const totalAmount = saleDetails
@@ -179,17 +178,10 @@ const ProductsSold = () => {
         <Grid>{productSoldList}</Grid>
       )}
       {productSoldList?.length === 0 && !querySaleDetails?.isLoading && (
-        <Card variant="outline" mt={5} mb={3}>
-          <CardBody>
-            <Alert colorScheme="purple" status="success">
-              <AlertIcon />
-              No se encontró resultados.
-            </Alert>
-          </CardBody>
-        </Card>
+        <WithoutResults text={"No se encontró resultados."} />
       )}
     </>
   );
 };
 
-export default ProductsSold;
+export default HistorySales;

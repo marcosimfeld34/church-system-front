@@ -8,8 +8,6 @@ import {
   Stack,
   Skeleton,
   Text,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
@@ -17,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 // components
 import MethodPayment from "./MethodPayment";
+import WithoutResults from "../common/WithoutResults";
 
 // custom hooks
 import { useMethodPayments } from "../../hooks/useMethodPayments";
@@ -150,14 +149,7 @@ const MethodPayments = () => {
       {!queryMethodPayments?.isError &&
         queryMethodPayments?.data?.length === 0 &&
         !queryMethodPayments?.isLoading && (
-          <Card variant="outline" mt={5} mb={3}>
-            <CardBody>
-              <Alert colorScheme="purple" status="success">
-                <AlertIcon />
-                No hay métodos de pago cargados.
-              </Alert>
-            </CardBody>
-          </Card>
+          <WithoutResults text={"No hay métodos de pago cargados."} />
         )}
     </>
   );

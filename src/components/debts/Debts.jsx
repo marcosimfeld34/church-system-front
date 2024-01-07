@@ -7,8 +7,6 @@ import {
   Stack,
   Skeleton,
   FormControl,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 import Select from "react-select";
 import { useState } from "react";
@@ -20,6 +18,7 @@ import Debt from "./Debt";
 import { useDebts } from "../../hooks/useDebts";
 import { useClients } from "../../hooks/useClients";
 import { useError } from "../../hooks/useError";
+import WithoutResults from "../common/WithoutResults";
 
 const Debts = () => {
   const [currentClient, setCurrentClient] = useState("");
@@ -190,14 +189,7 @@ const Debts = () => {
       {!queryDebts?.isError &&
         debtList?.length === 0 &&
         !queryDebts?.isLoading && (
-          <Card variant="outline" mt={5} mb={3}>
-            <CardBody>
-              <Alert colorScheme="purple" status="success">
-                <AlertIcon />
-                Tus clientes están al día.
-              </Alert>
-            </CardBody>
-          </Card>
+          <WithoutResults text={"Tus clientes están al día."} />
         )}
     </>
   );

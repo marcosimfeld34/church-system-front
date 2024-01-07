@@ -23,7 +23,7 @@ import {
 // import Logo from "/logo.svg";
 
 // custom hooks
-import { useLogout } from "../hooks/useLogout";
+import { useLogout } from "../../hooks/useLogout";
 
 import { useNavigate } from "react-router-dom";
 
@@ -342,10 +342,10 @@ const NAV_ITEMS = [
     label: "Métodos de pago",
     href: "/methodPayments",
   },
-  // {
-  //   label: "Gráficos",
-  //   href: "/reports",
-  // },
+  {
+    label: "Gráficos",
+    href: "/reports",
+  },
   {
     label: "Productos vendidos",
     href: "/products-sold",

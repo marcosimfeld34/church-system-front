@@ -10,8 +10,6 @@ import {
   Text,
   Stack,
   Skeleton,
-  Alert,
-  AlertIcon,
   FormControl,
   FormLabel,
   Input,
@@ -29,6 +27,7 @@ import * as Yup from "yup";
 // components
 import Sale from "./Sale";
 import Dashboard from "../reports/Dashboard";
+import WithoutResults from "../common/WithoutResults";
 
 // custom hooks
 import { useSaleDetails } from "../../hooks/useSaleDetails";
@@ -343,14 +342,7 @@ const Sales = () => {
           {querySales?.data?.length === 0 &&
             !querySales?.isError &&
             !querySales?.isLoading && (
-              <Card variant="outline">
-                <CardBody>
-                  <Alert colorScheme="purple" status="success">
-                    <AlertIcon />
-                    No se encontró resultados.
-                  </Alert>
-                </CardBody>
-              </Card>
+              <WithoutResults text={"No se encontró resultados."} />
             )}
         </GridItem>
       </Grid>

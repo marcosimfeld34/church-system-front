@@ -21,22 +21,22 @@ import {
 
 // components
 import Header from "./Header";
-import Products from "./products/Products";
-import ProductForm from "./products/ProductForm";
-import ProductDetails from "./products/ProductDetails";
-import Sales from "./sales/Sales";
-import SaleForm from "./sales/SaleForm";
-import SaleDetails from "./sales/SaleDetails";
-import Categories from "./categories/Categories";
-import CategoryForm from "./categories/CategoryForm";
-import ClientForm from "./clients/ClientForm";
-import Clients from "./clients/Clients";
-import MethodPayments from "./methodPayments/MethodPayments";
-import MethodPaymentForm from "./methodPayments/MethodPaymentForm";
-import Debts from "./debts/Debts";
-import DebtForm from "./debts/DebtForm";
-import BarChart from "./reports/BarChart";
-import ProductsSold from "./ProductsSold";
+import Products from "../products/Products";
+import ProductForm from "../products/ProductForm";
+import ProductDetails from "../products/ProductDetails";
+import Sales from "../sales/Sales";
+import SaleForm from "../sales/SaleForm";
+import SaleDetails from "../sales/SaleDetails";
+import Categories from "../categories/Categories";
+import CategoryForm from "../categories/CategoryForm";
+import ClientForm from "../clients/ClientForm";
+import Clients from "../clients/Clients";
+import MethodPayments from "../methodPayments/MethodPayments";
+import MethodPaymentForm from "../methodPayments/MethodPaymentForm";
+import Debts from "../debts/Debts";
+import DebtForm from "../debts/DebtForm";
+import BarChart from "../reports/BarChart";
+import HistorySales from "../reports/HistorySales";
 import PageNotFound from "./PageNotFound";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -212,11 +212,11 @@ const Home = () => {
                 colStart={{ base: 2, md: 2, lg: 3 }}
                 mb={10}
               >
-                <Card variant="outline" mb={3}>
-                  <CardBody>
-                    <BarChart />
-                  </CardBody>
-                </Card>
+                {/* <Card variant="outline" mb={3}> */}
+                {/* <CardBody> */}
+                <BarChart />
+                {/* </CardBody> */}
+                {/* </Card> */}
               </GridItem>
             </Grid>
           }
@@ -233,7 +233,7 @@ const Home = () => {
               >
                 <Card variant="outline" mb={3}>
                   <CardBody>
-                    <ProductsSold />
+                    <HistorySales />
                   </CardBody>
                 </Card>
               </GridItem>
