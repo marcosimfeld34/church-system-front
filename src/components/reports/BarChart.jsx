@@ -10,7 +10,17 @@ import {
   Title,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { Text, Card, CardBody, Flex } from "@chakra-ui/react";
+import {
+  Text,
+  Card,
+  CardBody,
+  CardFooter,
+  Divider,
+  Flex,
+  Button,
+  CardHeader,
+  Heading,
+} from "@chakra-ui/react";
 
 // custom hooks
 import { useSales } from "../../hooks/useSales";
@@ -18,6 +28,7 @@ import { useSaleDetails } from "../../hooks/useSaleDetails";
 
 // components
 import Loading from "../common/Loading";
+import { useState } from "react";
 
 ChartJS.register(
   LinearScale,
@@ -31,7 +42,12 @@ ChartJS.register(
 );
 
 const BarChart = () => {
-  const { query: querySaleDetails } = useSaleDetails({ all: true });
+  const { query: querySaleDetails } = useSaleDetails({
+    all: false,
+    historyMonthToRetrieve: 12,
+  });
+
+  const [numberOfMonth, setNumberOfMonth] = useState(6);
 
   let costObj = {
     1: { total: 0 },
@@ -68,7 +84,10 @@ const BarChart = () => {
     };
   });
 
-  const { query: querySales } = useSales({ all: true });
+  const { query: querySales } = useSales({
+    all: false,
+    historyMonthToRetrieve: 12,
+  });
 
   let obj = {
     1: { total: 0 },
@@ -123,10 +142,10 @@ const BarChart = () => {
       legend: {
         display: false,
       },
-      title: {
-        display: true,
-        text: "Ganancia últimos 12 meses",
-      },
+      // title: {
+      //   display: true,
+      //   text: `Ganancia últimos ${numberOfMonth} meses`,
+      // },
     },
   };
 
@@ -164,12 +183,12 @@ const BarChart = () => {
 
   const data = {
     labels: months
-      .slice(currentMonth - 12)
+      .slice(currentMonth - numberOfMonth)
       .concat(months.slice(currentMonth - 1, currentMonth)),
     datasets: [
       {
         data: profitArr
-          .slice(currentMonth - 12)
+          .slice(currentMonth - numberOfMonth)
           .concat(profitArr.slice(currentMonth - 1, currentMonth))
           .map((current) => current.total),
         backgroundColor: ["#805AD5"],
@@ -178,7 +197,7 @@ const BarChart = () => {
   };
 
   const lastTwelveYears = profitArr
-    .slice(currentMonth - 12)
+    .slice(currentMonth - numberOfMonth)
     .concat(profitArr.slice(currentMonth - 1, currentMonth))
     .map((current) => {
       return (
@@ -212,9 +231,40 @@ const BarChart = () => {
     return (
       <>
         <Card variant="outline" mb={3}>
+          <CardHeader textAlign={"center"}>
+            <Heading size={"lg"}>
+              Ganancia últimos {numberOfMonth} meses
+            </Heading>
+          </CardHeader>
           <CardBody>
             <Bar options={options} data={data} />
           </CardBody>
+          <Divider />
+          <CardFooter justifyContent={"center"}>
+            <Flex gap={2}>
+              <Button
+                onClick={() => setNumberOfMonth(12)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                12 meses
+              </Button>
+              <Button
+                onClick={() => setNumberOfMonth(6)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                6 meses
+              </Button>
+              <Button
+                onClick={() => setNumberOfMonth(3)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                3 meses
+              </Button>
+            </Flex>
+          </CardFooter>
         </Card>
         {lastTwelveYears}
       </>

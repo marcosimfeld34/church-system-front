@@ -13,6 +13,11 @@ const saleService = {
 
     finalUrl = finalUrl + `&all=${filters.all}`;
 
+    if (filters.historyMonthToRetrieve) {
+      finalUrl =
+        finalUrl + `&historyMonthToRetrieve=${filters.historyMonthToRetrieve}`;
+    }
+
     const { data } = await axiosPrivate.get(finalUrl, {
       withCredentials: true,
     });

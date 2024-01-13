@@ -11,7 +11,7 @@ export const useSaleDetails = (props) => {
   const axiosPrivate = useAxiosPrivate();
   const today = useTodayDate();
 
-  const { all } = props;
+  const { all, historyMonthToRetrieve } = props;
 
   const filters = JSON.parse(window.localStorage.getItem("filters"));
 
@@ -24,7 +24,9 @@ export const useSaleDetails = (props) => {
     queryKey: [
       "saleDetails",
       {
-        filters: filters ? { ...filters, all } : { ...rangeDateFilter, all },
+        filters: filters
+          ? { ...filters, all, historyMonthToRetrieve }
+          : { ...rangeDateFilter, all, historyMonthToRetrieve },
       },
     ],
     queryFn: async (key) => {
