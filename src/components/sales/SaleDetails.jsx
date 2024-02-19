@@ -214,7 +214,7 @@ const SaleDetails = () => {
                     >
                       <Text fontSize="lg">Fecha: </Text>
                       <Text as="b" fontSize="lg">
-                        {format(new Date(sale?.createdAt), "eeee dd yyyy", {
+                        {format(new Date(sale?.createdAt), "eeee dd MM yyyy", {
                           locale: es,
                         })}
                       </Text>
