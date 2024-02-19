@@ -26,6 +26,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
 // custom hooks
 import { useSaleDetails } from "../../hooks/useSaleDetails";
 import { useSales } from "../../hooks/useSales";
@@ -202,6 +205,18 @@ const SaleDetails = () => {
                       <Text fontSize="lg">Método de pago: </Text>
                       <Text as="b" fontSize="lg">
                         {sale?.methodPayment?.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Fecha: </Text>
+                      <Text as="b" fontSize="lg">
+                        {format(new Date(sale?.createdAt), "eeee dd yyyy", {
+                          locale: es,
+                        })}
                       </Text>
                     </Flex>
                   </GridItem>
