@@ -67,6 +67,10 @@ const Debt = ({ debt }) => {
     navigate(`${debt?._id}/edit`);
   };
 
+  const goToSale = () => {
+    navigate(`/${debt?.sale?._id}/details`);
+  };
+
   const handleDelete = async () => {
     setIsLoading(true);
     let response;
@@ -104,6 +108,16 @@ const Debt = ({ debt }) => {
                   <Text as={"span"} fontWeight={"500"}>
                     {debt?.client?.name}
                   </Text>
+                </Text>
+                <Text fontSize="md" align="start">
+                  Venta:{" "}
+                  <Button
+                    colorScheme="purple"
+                    variant={"link"}
+                    onClick={goToSale}
+                  >
+                    Ver detalle
+                  </Button>
                 </Text>
                 <Text fontSize="sm" align="start">
                   Entregado:{" "}
