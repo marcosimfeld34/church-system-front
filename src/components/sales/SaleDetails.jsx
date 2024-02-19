@@ -191,7 +191,7 @@ const SaleDetails = () => {
                     >
                       <Text fontSize="lg">Vendedor: </Text>
                       <Text as="b" fontSize="lg">
-                        {sale.createdBy.firstName} {sale.createdBy.lastName}
+                        {sale?.createdBy?.firstName} {sale?.createdBy?.lastName}
                       </Text>
                     </Flex>
                     <Flex
@@ -201,7 +201,7 @@ const SaleDetails = () => {
                     >
                       <Text fontSize="lg">Método de pago: </Text>
                       <Text as="b" fontSize="lg">
-                        {sale.methodPayment.name}
+                        {sale?.methodPayment?.name}
                       </Text>
                     </Flex>
                   </GridItem>
