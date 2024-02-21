@@ -36,15 +36,17 @@ import { useSales } from "../../hooks/useSales";
 const SaleDetails = () => {
   const { saleId } = useParams();
 
-  const { query: querySales } = useSales({ all: false });
+  const { query: querySales } = useSales({ all: false, id: saleId });
 
   const sale = querySales?.data?.filter((sale) => sale._id === saleId)[0];
 
-  const { query: querySaleDetails } = useSaleDetails({ all: false });
+  const { query: querySaleDetails } = useSaleDetails({ all: false, saleId });
 
   const saleDetails = querySaleDetails?.data?.filter(
     (saleDetail) => saleDetail?.sale === saleId
   );
+
+  console.log(saleDetails);
 
   const saleDetailsList = saleDetails?.map((saleDetail) => {
     return (
