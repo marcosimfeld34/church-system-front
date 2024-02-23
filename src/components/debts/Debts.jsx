@@ -21,7 +21,7 @@ import { useError } from "../../hooks/useError";
 import WithoutResults from "../common/WithoutResults";
 
 const Debts = () => {
-  const [currentClient, setCurrentClient] = useState("");
+  const [currentClient, setCurrentClient] = useState(undefined);
 
   const queryDebts = useDebts();
   const queryClients = useClients();
@@ -32,8 +32,14 @@ const Debts = () => {
     throwError(queryDebts?.error);
   }
 
-  const debtList = queryDebts?.data
+  const debtsNotPaidList = queryDebts?.data
     ?.filter((debt) => !debt.isPaid)
+    .map((debt) => {
+      return <Debt key={debt?._id + debt?.createdAt} debt={debt} />;
+    });
+
+  const debtsNotPaidByClientList = queryDebts?.data
+    ?.filter((debt) => debt.client._id === currentClient)
     .map((debt) => {
       return <Debt key={debt?._id + debt?.createdAt} debt={debt} />;
     });
@@ -184,10 +190,16 @@ const Debts = () => {
       )}
 
       {!queryDebts?.isError &&
-        debtList?.length > 0 &&
-        !queryDebts?.isLoading && <Grid>{debtList}</Grid>}
+        debtsNotPaidList?.length > 0 &&
+        !queryDebts?.isLoading &&
+        !currentClient && <Grid>{debtsNotPaidList}</Grid>}
       {!queryDebts?.isError &&
-        debtList?.length === 0 &&
+        debtsNotPaidByClientList?.length > 0 &&
+        !queryDebts?.isLoading &&
+        currentClient && <Grid>{debtsNotPaidByClientList}</Grid>}
+      {!queryDebts?.isError &&
+        (debtsNotPaidList?.length === 0 ||
+          (debtsNotPaidByClientList?.length === 0 && currentClient)) &&
         !queryDebts?.isLoading && (
           <WithoutResults text={"Tus clientes están al día."} />
         )}
