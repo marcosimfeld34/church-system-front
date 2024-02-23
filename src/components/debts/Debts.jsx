@@ -40,6 +40,7 @@ const Debts = () => {
 
   const debtsNotPaidByClientList = queryDebts?.data
     ?.filter((debt) => debt.client._id === currentClient)
+    .filter((debt) => !debt.isPaid)
     .map((debt) => {
       return <Debt key={debt?._id + debt?.createdAt} debt={debt} />;
     });
