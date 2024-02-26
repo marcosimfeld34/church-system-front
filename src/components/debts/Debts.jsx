@@ -87,9 +87,9 @@ const Debts = () => {
             <CardBody>
               <Flex direction={"column"}>
                 <Text>Total</Text>
-                {currentClient === "" && (
+                {currentClient === undefined && (
                   <Text fontSize={"2xl"} as="b">
-                    {totalAmountDebts && currentClient === ""
+                    {totalAmountDebts && currentClient === undefined
                       ? new Intl.NumberFormat("en-US", {
                           style: "currency",
                           minimumFractionDigits: 2,
@@ -102,9 +102,9 @@ const Debts = () => {
                         }).format(0)}
                   </Text>
                 )}
-                {currentClient !== "" && (
+                {currentClient !== undefined && (
                   <Text fontSize={"2xl"} as="b">
-                    {totalAmountByClient && currentClient !== ""
+                    {totalAmountByClient && currentClient !== undefined
                       ? new Intl.NumberFormat("en-US", {
                           style: "currency",
                           minimumFractionDigits: 2,
