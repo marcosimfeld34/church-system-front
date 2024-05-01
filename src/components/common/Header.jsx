@@ -12,32 +12,32 @@ import {
   useBreakpointValue,
   useDisclosure,
   Divider,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 import {
   HamburgerIcon,
   CloseIcon,
   ChevronDownIcon,
   ArrowForwardIcon,
-} from "@chakra-ui/icons";
+} from "@chakra-ui/icons"
 
 // import Logo from "/logo.svg";
 
 // custom hooks
-import { useLogout } from "../../hooks/useLogout";
+import { useLogout } from "../../hooks/useLogout"
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
 const Header = () => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle } = useDisclosure()
 
-  const { logout } = useLogout();
+  const { logout } = useLogout()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
+    await logout()
+    navigate("/login")
+  }
 
   return (
     <Box>
@@ -117,12 +117,12 @@ const Header = () => {
         <MobileNav navigate={navigate} />
       </Collapse>
     </Box>
-  );
-};
+  )
+}
 
 const DesktopNav = ({ navigate }) => {
-  const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("gray.800", "white");
+  const linkColor = useColorModeValue("gray.600", "gray.200")
+  const linkHoverColor = useColorModeValue("gray.800", "white")
   // const popoverContentBgColor = useColorModeValue("white", "gray.800");
 
   return (
@@ -181,12 +181,12 @@ const DesktopNav = ({ navigate }) => {
                 )}
               </Popover> */}
             </Box>
-          );
+          )
         }
       })}
     </Stack>
-  );
-};
+  )
+}
 
 // const DesktopSubNav = ({ label, href, subLabel }) => {
 //   return (
@@ -241,15 +241,15 @@ const MobileNav = ({ navigate }) => {
               {...navItem}
               navigate={navigate}
             />
-          );
+          )
         }
       })}
     </Stack>
-  );
-};
+  )
+}
 
 const MobileNavItem = ({ label, children, href, navigate }) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle } = useDisclosure()
 
   return (
     <Stack spacing={4} onClick={children && onToggle}>
@@ -307,8 +307,8 @@ const MobileNavItem = ({ label, children, href, navigate }) => {
         </Stack>
       </Collapse>
     </Stack>
-  );
-};
+  )
+}
 
 const NAV_ITEMS = [
   {
@@ -342,14 +342,14 @@ const NAV_ITEMS = [
     label: "Métodos de pago",
     href: "/methodPayments",
   },
-  {
-    label: "Gráficos",
-    href: "/reports",
-  },
+  // {
+  //   label: "Gráficos",
+  //   href: "/reports",
+  // },
   {
     label: "Productos vendidos",
     href: "/products-sold",
   },
-];
+]
 
-export default Header;
+export default Header
